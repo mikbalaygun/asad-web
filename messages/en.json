@@ -1,0 +1,31 @@
+{
+  "messages": {
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "news": "News",
+      "announcements": "Announcements",
+      "articles": "Articles",
+      "gallery": "Gallery",
+      "contact": "Contact",
+      "cta": "Become a Member",
+      "aboutPages": {
+        "about": "About Us",
+        "services": "Services",
+        "projects": "Projects",
+        "board": "Audit Board",
+        "management": "Management Board",
+        "president": "President",
+        "representative": "Representative",
+        "sponsors": "Our Sponsors"
+      },
+      "galleryPages": {
+        "photo": "Photo Gallery",
+        "video": "Video Gallery"
+      }
+    },
+    "brand": {
+      "tagline": "Anatolian Underwater Research"
+    }
+  }
+}

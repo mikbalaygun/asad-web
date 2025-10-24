@@ -1,0 +1,31 @@
+{
+  "messages": {
+    "nav": {
+      "home": "Ana Sayfa",
+      "about": "Hakkımızda",
+      "news": "Haberler",
+      "announcements": "Duyurular",
+      "articles": "Makaleler",
+      "gallery": "Galeri",
+      "contact": "İletişim",
+      "cta": "Üye Ol",
+      "aboutPages": {
+        "about": "Hakkımızda",
+        "services": "Hizmetler",
+        "projects": "Projeler",
+        "board": "Denetleme Kurulu",
+        "management": "Yönetim Kurulu",
+        "president": "Başkan",
+        "representative": "Temsilci",
+        "sponsors": "Sponsorlarımız"
+      },
+      "galleryPages": {
+        "photo": "Foto Galeri",
+        "video": "Video Galeri"
+      }
+    },
+    "brand": {
+      "tagline": "Anadolu Sualtı Araştırmaları"
+    }
+  }
+}
