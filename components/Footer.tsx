@@ -23,14 +23,17 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
       resources: 'Kaynaklar',
       followUs: 'Bizi Takip Edin',
       copyright: 'Tüm hakları saklıdır.',
+      designedBy: 'Tasarım',
       links: {
         corporate: [
           { label: 'Hakkımızda', href: `/${locale}/hakkimizda` },
           { label: 'Hizmetler', href: `/${locale}/hakkimizda/hizmetler` },
-          { label: 'Projeler', href: `/${locale}/hakkimizda/projeler` },
+          { label: 'Projeler', href: `/${locale}/projeler` },
           { label: 'Yönetim Kurulu', href: `/${locale}/hakkimizda/yonetim-kurulu` },
           { label: 'Denetleme Kurulu', href: `/${locale}/hakkimizda/denetleme-kurulu` },
-          
+          { label: 'Başkan', href: `/${locale}/hakkimizda/baskan` },
+          { label: 'Temsilci', href: `/${locale}/hakkimizda/temsilci` },
+          { label: 'Sponsorlarımız', href: `/${locale}/hakkimizda/sponsorlarimiz` },
         ],
         services: [
           { label: 'Tüm Hizmetler', href: `/${locale}/hizmetler` },
@@ -52,11 +55,12 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
       resources: 'Resources',
       followUs: 'Follow Us',
       copyright: 'All rights reserved.',
+      designedBy: 'Designed by',
       links: {
         corporate: [
           { label: 'About Us', href: `/${locale}/hakkimizda` },
           { label: 'Services', href: `/${locale}/hakkimizda/hizmetler` },
-          { label: 'Projects', href: `/${locale}/hakkimizda/projeler` },
+          { label: 'Projects', href: `/${locale}/projeler` },
           { label: 'Management Board', href: `/${locale}/hakkimizda/yonetim-kurulu` },
           { label: 'Audit Board', href: `/${locale}/hakkimizda/denetleme-kurulu` },
           { label: 'President', href: `/${locale}/hakkimizda/baskan` },
@@ -245,7 +249,7 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
             {/* Copyright */}
             <p className="text-white/40 text-sm text-center md:text-left">
               © {new Date().getFullYear()} ASAD. {t.copyright}
@@ -261,6 +265,28 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
             </button>
+          </div>
+
+          {/* Developer Credit */}
+          <div className="pt-6 border-t border-white/5">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <span className="text-white/30 text-xs">{t.designedBy}</span>
+              <a 
+                href="https://www.instagram.com/mikbalaygn/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                <div className="relative w-24 h-8">
+                  <Image
+                    src="/logo-gradientt.png"
+                    alt="Developer Logo"
+                    fill
+                    className="object-contain brightness-200 group-hover:brightness-[250] transition-all"
+                  />
+                </div>
+              </a>
+            </div>
           </div>
         </div>
       </div>

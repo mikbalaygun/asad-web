@@ -1,7 +1,24 @@
 // app/[locale]/duyurular/[slug]/page.tsx
-import { getAnnouncementBySlug, getLatestAnnouncements } from '@/lib/api/announcements';
+import { getNoticeBySlug, getAllNotices } from '@/lib/api/notices';
 import { notFound } from 'next/navigation';
 import AnnouncementDetailClient from '@/components/AnnouncementDetailClient';
+
+export async function generateStaticParams() {
+  const noticesTr = await getAllNotices('tr');
+  const noticesEn = await getAllNotices('en');
+  
+  const paramsTr = noticesTr.map((notice) => ({
+    locale: 'tr' as const,
+    slug: notice.slug,
+  }));
+  
+  const paramsEn = noticesEn.map((notice) => ({
+    locale: 'en' as const,
+    slug: notice.slug,
+  }));
+  
+  return [...paramsTr, ...paramsEn];
+}
 
 export async function generateMetadata({
   params,
@@ -9,17 +26,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: 'tr' | 'en' }>;
 }) {
   const { slug, locale } = await params;
-  const announcement = await getAnnouncementBySlug(slug, locale);
+  const notice = await getNoticeBySlug(slug, locale);
 
-  if (!announcement) {
+  if (!notice) {
     return {
       title: 'Duyuru Bulunamadı | ASAD',
     };
   }
 
   return {
-    title: `${announcement.title} | ASAD`,
-    description: extractTextFromBlocks(announcement.content).slice(0, 160),
+    title: `${notice.title} | ASAD`,
+    description: extractTextFromBlocks(notice.content).slice(0, 160),
   };
 }
 
@@ -29,28 +46,28 @@ export default async function AnnouncementDetailPage({
   params: Promise<{ slug: string; locale: 'tr' | 'en' }>;
 }) {
   const { slug, locale } = await params;
-  const announcement = await getAnnouncementBySlug(slug, locale);
+  const notice = await getNoticeBySlug(slug, locale);
 
-  if (!announcement) {
+  if (!notice) {
     notFound();
   }
 
   // İlgili duyuruları getir (aynı öncelik seviyesinden)
-  const allAnnouncements = await getLatestAnnouncements(10, locale);
-  const relatedAnnouncements = allAnnouncements
-    .filter((item) => item.slug !== slug && item.priority === announcement.priority)
+  const allNotices = await getAllNotices(locale);
+  const relatedAnnouncements = allNotices
+    .filter((item) => item.slug !== slug && item.priority === notice.priority)
     .slice(0, 3);
 
   // İçeriği HTML'e çevir
-  const htmlContent = convertBlocksToHTML(announcement.content);
+  const htmlContent = convertBlocksToHTML(notice.content);
 
   const announcementData = {
-    id: announcement.id,
-    slug: announcement.slug,
-    title: announcement.title,
+    id: notice.id,
+    slug: notice.slug,
+    title: notice.title,
     content: htmlContent,
-    priority: announcement.priority,
-    startDate: new Date(announcement.startDate).toLocaleDateString(
+    priority: notice.priority,
+    startDate: new Date(notice.startDate).toLocaleDateString(
       locale === 'tr' ? 'tr-TR' : 'en-US',
       {
         year: 'numeric',
@@ -58,7 +75,7 @@ export default async function AnnouncementDetailPage({
         day: 'numeric',
       }
     ),
-    endDate: new Date(announcement.endDate).toLocaleDateString(
+    endDate: new Date(notice.endDate).toLocaleDateString(
       locale === 'tr' ? 'tr-TR' : 'en-US',
       {
         year: 'numeric',
@@ -66,8 +83,8 @@ export default async function AnnouncementDetailPage({
         day: 'numeric',
       }
     ),
-    isActive: announcement.isActive,
-    localizations: announcement.localizations || [],
+    isActive: notice.isActive,
+    localizations: [], // Notices için localizations eklenebilir
   };
 
   const formattedRelated = relatedAnnouncements.map((item) => ({
@@ -96,7 +113,6 @@ export default async function AnnouncementDetailPage({
 
 // Strapi blocks'u HTML'e çevir
 function convertBlocksToHTML(blocks: any): string {
-  // Eğer array değilse veya boşsa
   if (!blocks) return '';
   if (typeof blocks === 'string') return `<p>${blocks}</p>`;
   if (!Array.isArray(blocks)) return '';

@@ -1,5 +1,5 @@
 // app/[locale]/duyurular/page.tsx
-import { getAllAnnouncements } from '@/lib/api/announcements';
+import { getAllNotices } from '@/lib/api/notices';
 import AnnouncementsListClient from '@/components/AnnouncementsListClient';
 
 export const metadata = {
@@ -13,10 +13,10 @@ export default async function AnnouncementsPage({
   params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
   const { locale } = await params;
-  const announcementsData = await getAllAnnouncements(locale);
+  const noticesData = await getAllNotices(locale);
 
   // Strapi verisini component'e uygun formata çevir
-  const formattedAnnouncements = announcementsData.map((item) => ({
+  const formattedAnnouncements = noticesData.map((item) => ({
     id: item.id,
     slug: item.slug,
     title: item.title,
@@ -46,7 +46,6 @@ export default async function AnnouncementsPage({
 
 // İçerikten düz metin çıkar
 function extractTextFromBlocks(blocks: any): string {
-  // Eğer array değilse veya boşsa
   if (!blocks) return '';
   if (typeof blocks === 'string') return blocks.slice(0, 200);
   if (!Array.isArray(blocks)) return '';
@@ -60,5 +59,5 @@ function extractTextFromBlocks(blocks: any): string {
       return '';
     })
     .join(' ')
-    .slice(0, 200); // İlk 200 karakter
+    .slice(0, 200);
 }

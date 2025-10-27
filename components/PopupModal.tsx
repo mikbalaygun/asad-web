@@ -72,12 +72,10 @@ export default function PopupModal({
 
     switch (displayFrequency) {
       case 'once':
-        // Bir kez göster (localStorage'da varsa gösterme)
         const shownOnce = localStorage.getItem(storageKey);
         return !shownOnce;
 
       case 'daily':
-        // Günlük göster
         const lastShownDaily = localStorage.getItem(storageKey);
         if (!lastShownDaily) return true;
         
@@ -86,12 +84,10 @@ export default function PopupModal({
         return lastDate.getDate() !== today.getDate();
 
       case 'session':
-        // Her oturumda göster (sessionStorage)
         const shownSession = sessionStorage.getItem(storageKey);
         return !shownSession;
 
       case 'always':
-        // Her zaman göster
         return true;
 
       default:
@@ -122,7 +118,6 @@ export default function PopupModal({
         break;
 
       case 'always':
-        // Always durumunda kaydetme
         break;
     }
   };
@@ -143,7 +138,7 @@ export default function PopupModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 lg:p-8 bg-black/80 backdrop-blur-sm overflow-y-auto"
           onClick={handleBackdropClick}
         >
           {/* Modal Content */}
@@ -152,13 +147,13 @@ export default function PopupModal({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.3, type: 'spring', damping: 20 }}
-            className="relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl"
+            className="relative w-full max-w-[95vw] md:max-w-2xl lg:max-w-3xl xl:max-w-4xl my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-all hover:scale-110"
+              className="absolute -top-12 right-0 md:top-4 md:right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-all hover:scale-110"
               aria-label="Close popup"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,29 +162,30 @@ export default function PopupModal({
             </button>
 
             {/* Image Container */}
-            <div className="relative w-full">
-              {/* Desktop: landscape (4:3), Mobile: portrait (3:4) */}
-              <div className={`relative ${isMobile ? 'aspect-[3/4]' : 'aspect-[4/3]'}`}>
+            <div className="relative w-full rounded-xl md:rounded-2xl overflow-hidden shadow-2xl">
+              {/* Responsive aspect ratio - görseli tam göster */}
+              <div className="relative w-full">
                 <Image
                   src={currentImage}
                   alt={title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                  width={1200}
+                  height={1200}
+                  className="w-full h-auto object-contain max-h-[85vh]"
+                  sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px"
                   priority
                 />
               </div>
 
               {/* Link Overlay (if linkUrl exists) */}
               {linkUrl && (
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
                   <Link
                     href={linkUrl}
                     onClick={handleClose}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-ocean-cyan hover:bg-ocean-cyan/90 text-ocean-deep font-semibold rounded-lg shadow-lg transition-all hover:scale-105"
+                    className="inline-flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-ocean-cyan hover:bg-ocean-cyan/90 text-ocean-deep font-semibold rounded-lg shadow-lg transition-all hover:scale-105 text-sm md:text-base"
                   >
                     <span>{linkText || 'Detayları Gör'}</span>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>

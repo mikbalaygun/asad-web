@@ -6,8 +6,8 @@ import { President } from '../types/president';
 export async function getPresident(locale: 'tr' | 'en' = 'tr'): Promise<President | null> {
   try {
     const response = await fetchAPI<President>(
-      '/president?populate=photo',
-      locale
+      '/president?populate=photo',  // 👈 populate'i query string olarak ekle
+      locale                         // 👈 locale ikinci parametre
     );
     return response.data || null;
   } catch (error) {

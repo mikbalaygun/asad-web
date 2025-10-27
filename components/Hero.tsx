@@ -118,7 +118,7 @@ export default function Hero({ locale }: Props) {
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
+        className="absolute bottom-8 left-0 right-0 z-20 flex justify-center items-center"
         animate={{ y: [0, 12, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >

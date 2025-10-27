@@ -18,7 +18,7 @@ export default async function PresidentPage({
   
   let presidentData: President | null = null;
   try {
-    presidentData = await getPresident();
+    presidentData = await getPresident(locale); // 👈 locale parametresini ekledik
   } catch (error) {
     console.error('Failed to fetch president:', error);
   }
