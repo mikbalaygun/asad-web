@@ -1,6 +1,7 @@
 // lib/types/notice.ts
 export interface Notice {
   id: number;
+  documentId?: string;
   slug: string;
   title: string;
   content: any; // Rich text blocks
@@ -12,4 +13,11 @@ export interface Notice {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  localizations?: Array<{
+    id: number;
+    documentId: string;
+    title: string;
+    slug: string;
+    locale: string;
+  }>;
 }

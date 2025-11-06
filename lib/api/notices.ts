@@ -6,7 +6,7 @@ import { Notice } from '../types/notice';
 export async function getAllNotices(locale: 'tr' | 'en' = 'tr'): Promise<Notice[]> {
   try {
     const response = await fetchAPI<Notice[]>(
-      '/notices?filters[isActive][$eq]=true&sort=startDate:desc',
+      '/notices?filters[isActive][$eq]=true&sort=startDate:desc&populate=localizations',
       locale
     );
     return response.data;
@@ -16,14 +16,14 @@ export async function getAllNotices(locale: 'tr' | 'en' = 'tr'): Promise<Notice[
   }
 }
 
-// Slug'a göre bildirim getir
+// Slug'a göre bildirim getir (localizations dahil)
 export async function getNoticeBySlug(
   slug: string,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<Notice | null> {
   try {
     const response = await fetchAPI<Notice[]>(
-      `/notices?filters[slug][$eq]=${slug}`,
+      `/notices?filters[slug][$eq]=${slug}&populate=localizations`,
       locale
     );
     return response.data[0] || null;
@@ -40,7 +40,7 @@ export async function getNoticesByPriority(
 ): Promise<Notice[]> {
   try {
     const response = await fetchAPI<Notice[]>(
-      `/notices?filters[priority][$eq]=${priority}&filters[isActive][$eq]=true&sort=startDate:desc`,
+      `/notices?filters[priority][$eq]=${priority}&filters[isActive][$eq]=true&sort=startDate:desc&populate=localizations`,
       locale
     );
     return response.data;
@@ -57,7 +57,7 @@ export async function getLatestNotices(
 ): Promise<Notice[]> {
   try {
     const response = await fetchAPI<Notice[]>(
-      `/notices?filters[isActive][$eq]=true&sort=startDate:desc&pagination[limit]=${limit}`,
+      `/notices?filters[isActive][$eq]=true&sort=startDate:desc&pagination[limit]=${limit}&populate=localizations`,
       locale
     );
     return response.data;

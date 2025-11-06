@@ -84,7 +84,7 @@ export default async function AnnouncementDetailPage({
       }
     ),
     isActive: notice.isActive,
-    localizations: [], // Notices için localizations eklenebilir
+    localizations: notice.localizations || [],
   };
 
   const formattedRelated = relatedAnnouncements.map((item) => ({

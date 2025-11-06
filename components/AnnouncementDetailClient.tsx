@@ -80,8 +80,8 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative min-h-[50vh] overflow-hidden">
+      {/* Hero - Düzeltilmiş */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/news/news-4.png"
@@ -93,58 +93,56 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
           <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep/90 via-ocean-deep/80 to-ocean-deep" />
         </div>
 
-        <div className="absolute top-24 left-0 right-0 z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <Link href={`/${locale}/duyurular`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Duyurular' : 'Announcements'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
-            </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-white/80 mb-8">
+            <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <Link href={`/${locale}/duyurular`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Duyurular' : 'Announcements'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
           </div>
-        </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 pb-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3 mb-4">
-              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${config.bg} border ${config.border} ${config.text} text-sm font-semibold`}>
-                <span>{config.icon}</span>
-                <span>{config.label[locale as 'tr' | 'en']}</span>
+          {/* Badges */}
+          <div className="flex items-center gap-3 mb-6">
+            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${config.bg} border ${config.border} ${config.text} text-sm font-semibold`}>
+              <span>{config.icon}</span>
+              <span>{config.label[locale as 'tr' | 'en']}</span>
+            </span>
+            
+            {!announcement.isActive && (
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-500/20 border border-gray-500/30 text-gray-400 text-sm font-semibold">
+                {locale === 'tr' ? '⏸️ Geçersiz' : '⏸️ Expired'}
               </span>
-              
-              {!announcement.isActive && (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-500/20 border border-gray-500/30 text-gray-400 text-sm font-semibold">
-                  {locale === 'tr' ? '⏸️ Geçersiz' : '⏸️ Expired'}
-                </span>
-              )}
+            )}
+          </div>
+
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 max-w-4xl leading-tight">
+            {announcement.title}
+          </h1>
+
+          {/* Meta */}
+          <div className="flex flex-wrap items-center gap-6 text-white/80">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>{locale === 'tr' ? 'Başlangıç:' : 'Start:'} {announcement.startDate}</span>
             </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 max-w-4xl">
-              {announcement.title}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-6 text-white/80">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>{locale === 'tr' ? 'Başlangıç:' : 'Start:'} {announcement.startDate}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{locale === 'tr' ? 'Bitiş:' : 'End:'} {announcement.endDate}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{locale === 'tr' ? 'Bitiş:' : 'End:'} {announcement.endDate}</span>
             </div>
           </div>
         </div>

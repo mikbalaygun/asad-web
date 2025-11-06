@@ -56,9 +56,9 @@ function AnnouncementCard({ item, locale }: { item: AnnouncementItem; locale: st
   const config = priorityConfig[item.priority as keyof typeof priorityConfig] || priorityConfig.medium;
   
   return (
-    <article className="group">
-      <Link href={`/${locale}/duyurular/${item.slug}`}>
-        <div className={`relative backdrop-blur-lg ${config.bg} border ${config.border} rounded-2xl p-6 hover:shadow-xl transition-all duration-300`}>
+    <article className="group h-full">
+      <Link href={`/${locale}/duyurular/${item.slug}`} className="block h-full">
+        <div className={`relative backdrop-blur-lg ${config.bg} border ${config.border} rounded-2xl p-6 hover:shadow-xl transition-all duration-300 h-full flex flex-col`}>
           {/* Priority Badge */}
           <div className="flex items-center justify-between mb-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${config.bg} border ${config.border} ${config.text} text-sm font-semibold`}>
@@ -75,17 +75,17 @@ function AnnouncementCard({ item, locale }: { item: AnnouncementItem; locale: st
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-white mb-3 group-hover:text-ocean-cyan transition-colors">
+          <h3 className="text-xl font-bold text-white mb-3 group-hover:text-ocean-cyan transition-colors line-clamp-2">
             {item.title}
           </h3>
 
           {/* Content Preview */}
-          <p className="text-white/70 text-sm leading-relaxed line-clamp-2 mb-4">
+          <p className="text-white/70 text-sm leading-relaxed line-clamp-3 mb-4 flex-grow">
             {item.content}
           </p>
 
           {/* End Date */}
-          <div className="flex items-center gap-2 text-white/50 text-sm pt-4 border-t border-white/10">
+          <div className="flex items-center gap-2 text-white/50 text-sm pt-4 border-t border-white/10 mt-auto">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

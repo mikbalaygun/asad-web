@@ -66,8 +66,8 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero - Arka plan sabit */}
-      <section className="relative min-h-[60vh] overflow-hidden">
+      {/* Hero - Düzeltilmiş */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/news/news-1.png"
@@ -79,55 +79,53 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
           <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep/80 via-ocean-deep/70 to-ocean-deep" />
         </div>
 
-        <div className="absolute top-24 left-0 right-0 z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <Link href={`/${locale}/haberler`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Haberler' : 'News'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
-            </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-white/80 mb-8">
+            <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <Link href={`/${locale}/haberler`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Haberler' : 'News'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
           </div>
-        </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 pb-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <span className="inline-block px-4 py-2 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-sm font-semibold mb-4">
-              {news.category}
-            </span>
+          {/* Category Badge */}
+          <span className="inline-block px-4 py-2 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-sm font-semibold mb-6">
+            {news.category}
+          </span>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 max-w-4xl">
-              {news.title}
-            </h1>
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 max-w-4xl leading-tight">
+            {news.title}
+          </h1>
 
-            <div className="flex flex-wrap items-center gap-6 text-white/80">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span>{news.author}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <time>{news.date}</time>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{news.readTime}</span>
-              </div>
+          {/* Meta Information */}
+          <div className="flex flex-wrap items-center gap-6 text-white/80">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>{news.author}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <time>{news.date}</time>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{news.readTime}</span>
             </div>
           </div>
         </div>
