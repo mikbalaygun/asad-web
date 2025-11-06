@@ -5,25 +5,31 @@ import { getStrapiMedia } from '@/lib/strapi';
 import NewsDetailClient from '@/components/NewsDetailClient';
 import type { News } from '@/lib/types/news';
 
-export const dynamic = 'force-dynamic';  // notice gibi dinamik
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-type Params = { slug: string; locale: 'tr' | 'en' };
+type Params = Promise<{ slug: string; locale: 'tr' | 'en' }>;
 
 export async function generateMetadata({ params }: { params: Params }) {
-  const { slug, locale } = params;
-  const news = await getNewsBySlug(slug, locale);
+  const { slug, locale } = await params;
+  
+  try {
+    const news = await getNewsBySlug(slug, locale);
 
-  if (!news) return { title: 'Haber Bulunamadı | ASAD' };
+    if (!news) return { title: 'Haber Bulunamadı | ASAD' };
 
-  return {
-    title: `${news.Title} | ASAD`,
-    description: news.excerpt,
-  };
+    return {
+      title: `${news.Title} | ASAD`,
+      description: news.excerpt,
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return { title: 'Haber | ASAD' };
+  }
 }
 
 export default async function NewsDetailPage({ params }: { params: Params }) {
-  const { slug, locale } = params;
+  const { slug, locale } = await params;
 
   const news = await getNewsBySlug(slug, locale);
   if (!news) {
@@ -83,85 +89,105 @@ export default async function NewsDetailPage({ params }: { params: Params }) {
 
 // Strapi rich-text blocks (any[]) ya da string'i HTML'e çevir
 function convertBlocksToHTML(blocks: unknown): string {
-  if (!blocks) return '';
+  try {
+    if (!blocks) return '';
 
-  if (typeof blocks === 'string') {
-    const paragraphs = blocks.split('\n\n');
-    return paragraphs
-      .map((para) => {
-        if (para.trim().startsWith('-')) {
-          const items = para
-            .split('\n')
-            .filter((l) => l.trim().startsWith('-'))
-            .map((l) => `<li>${l.trim().substring(1).trim()}</li>`)
-            .join('');
-          return `<ul>${items}</ul>`;
+    if (typeof blocks === 'string') {
+      const paragraphs = blocks.split('\n\n');
+      return paragraphs
+        .map((para) => {
+          if (para.trim().startsWith('-')) {
+            const items = para
+              .split('\n')
+              .filter((l) => l.trim().startsWith('-'))
+              .map((l) => `<li>${l.trim().substring(1).trim()}</li>`)
+              .join('');
+            return `<ul>${items}</ul>`;
+          }
+          return `<p>${para.replace(/\n/g, '<br>')}</p>`;
+        })
+        .join('');
+    }
+
+    if (!Array.isArray(blocks) || (blocks as any[]).length === 0) return '';
+
+    return (blocks as any[])
+      .map((block: any) => {
+        try {
+          if (!block || !block.type) return '';
+
+          if (block.type === 'paragraph') {
+            const text = (block.children ?? [])
+              .map((child: any) => {
+                if (!child) return '';
+                let content = child.text ?? '';
+                if (child.bold) content = `<strong>${content}</strong>`;
+                if (child.italic) content = `<em>${content}</em>`;
+                if (child.underline) content = `<u>${content}</u>`;
+                if (child.strikethrough) content = `<s>${content}</s>`;
+                if (child.code) content = `<code>${content}</code>`;
+                return content;
+              })
+              .join('');
+            return text ? `<p>${text}</p>` : '';
+          }
+
+          if (block.type === 'heading') {
+            const level = block.level || 2;
+            const text = (block.children ?? []).map((c: any) => c?.text ?? '').join('');
+            return text ? `<h${level}>${text}</h${level}>` : '';
+          }
+
+          if (block.type === 'quote') {
+            const text = (block.children ?? []).map((c: any) => c?.text ?? '').join('');
+            return text ? `<blockquote>${text}</blockquote>` : '';
+          }
+
+          if (block.type === 'list') {
+            const tag = block.format === 'ordered' ? 'ol' : 'ul';
+            const items = (block.children ?? [])
+              .map((it: any) => {
+                if (!it) return '';
+                const t = (it.children ?? []).map((c: any) => c?.text ?? '').join('');
+                return t ? `<li>${t}</li>` : '';
+              })
+              .filter((item: string) => item !== '')
+              .join('');
+            return items ? `<${tag}>${items}</${tag}>` : '';
+          }
+
+          return '';
+        } catch (blockError) {
+          console.error('Error processing block:', blockError);
+          return '';
         }
-        return `<p>${para.replace(/\n/g, '<br>')}</p>`;
       })
-      .join('');
+      .filter((html) => html !== '')
+      .join('\n');
+  } catch (error) {
+    console.error('Error converting blocks to HTML:', error);
+    return '<p>İçerik yüklenirken bir hata oluştu.</p>';
   }
-
-  if (!Array.isArray(blocks) || (blocks as any[]).length === 0) return '';
-
-  return (blocks as any[])
-    .map((block: any) => {
-      if (block.type === 'paragraph') {
-        const text = (block.children ?? [])
-          .map((child: any) => {
-            let content = child.text ?? '';
-            if (child.bold) content = `<strong>${content}</strong>`;
-            if (child.italic) content = `<em>${content}</em>`;
-            if (child.underline) content = `<u>${content}</u>`;
-            if (child.strikethrough) content = `<s>${content}</s>`;
-            if (child.code) content = `<code>${content}</code>`;
-            return content;
-          })
-          .join('');
-        return `<p>${text}</p>`;
-      }
-
-      if (block.type === 'heading') {
-        const level = block.level || 2;
-        const text = (block.children ?? []).map((c: any) => c.text ?? '').join('');
-        return `<h${level}>${text}</h${level}>`;
-      }
-
-      if (block.type === 'quote') {
-        const text = (block.children ?? []).map((c: any) => c.text ?? '').join('');
-        return `<blockquote>${text}</blockquote>`;
-      }
-
-      if (block.type === 'list') {
-        const tag = block.format === 'ordered' ? 'ol' : 'ul';
-        const items = (block.children ?? [])
-          .map((it: any) => {
-            const t = (it.children ?? []).map((c: any) => c.text ?? '').join('');
-            return `<li>${t}</li>`;
-          })
-          .join('');
-        return `<${tag}>${items}</${tag}>`;
-      }
-
-      return '';
-    })
-    .join('\n');
 }
 
 function calculateReadTime(content: unknown): string {
-  if (!content) return '3 dk';
+  try {
+    if (!content) return '3 dk';
 
-  let text = '';
-  if (typeof content === 'string') {
-    text = content;
-  } else if (Array.isArray(content)) {
-    text = (content as any[])
-      .map((b) => (b?.children ? b.children.map((c: any) => c.text ?? '').join(' ') : ''))
-      .join(' ');
+    let text = '';
+    if (typeof content === 'string') {
+      text = content;
+    } else if (Array.isArray(content)) {
+      text = (content as any[])
+        .map((b) => (b?.children ? b.children.map((c: any) => c?.text ?? '').join(' ') : ''))
+        .join(' ');
+    }
+
+    const wordsPerMinute = 200;
+    const wordCount = (text.trim().match(/\S+/g) || []).length;
+    const minutes = Math.ceil(wordCount / wordsPerMinute) || 1;
+    return `${minutes} dk`;
+  } catch (error) {
+    return '3 dk';
   }
-
-  const wordsPerMinute = 200;
-  const wordCount = (text.trim().match(/\S+/g) || []).length;
-  const minutes = Math.ceil(wordCount / wordsPerMinute) || 1;
-  return `${minutes} dk`;
 }
