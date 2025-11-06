@@ -5,10 +5,13 @@ import Hero from '@/components/Hero';
 import NewsSectionHome from '@/components/NewsSectionHome';
 import ServicesSectionServer from '@/components/ServicesSectionServer';
 import { getLatestNews } from '@/lib/api/news';
-import { getLatestAnnouncements } from '@/lib/api/announcements';
+import { getLatestNotices } from '@/lib/api/notices';
 import { getStrapiMedia } from '@/lib/strapi';
 import { News } from '@/lib/types/news';
-import { Announcement } from '@/lib/types/announcement';
+import { Notice } from '@/lib/types/notice';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function Home({
   params,
@@ -19,12 +22,12 @@ export default async function Home({
   
   // Strapi'den veri çek
   let newsData: News[] = [];
-  let announcementsData: Announcement[] = [];
+  let noticesData: Notice[] = [];
   
   try {
-    [newsData, announcementsData] = await Promise.all([
+    [newsData, noticesData] = await Promise.all([
       getLatestNews(3, locale),
-      getLatestAnnouncements(3, locale)
+      getLatestNotices(3, locale)
     ]);
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -35,8 +38,8 @@ export default async function Home({
     id: item.id,
     slug: item.slug,
     title: item.Title,
-    excerpt: item.excerpt,
-    date: new Date(item.publishedTime).toLocaleDateString(
+    excerpt: item.excerpt || '',
+    date: new Date(item.publishedTime ?? item.publishedAt).toLocaleDateString(
       locale === 'tr' ? 'tr-TR' : 'en-US',
       {
         year: 'numeric',
@@ -44,12 +47,12 @@ export default async function Home({
         day: 'numeric',
       }
     ),
-    category: item.category,
+    category: item.category || (locale === 'tr' ? 'Genel' : 'General'),
     image: item.coverImage ? getStrapiMedia(item.coverImage.url) : undefined,
   }));
 
-  // Format announcements
-  const formattedAnnouncements = announcementsData.map((item) => ({
+  // Format notices (announcements)
+  const formattedAnnouncements = noticesData.map((item) => ({
     id: item.id,
     slug: item.slug,
     title: item.title,
@@ -83,18 +86,28 @@ export default async function Home({
 
 // Helper function
 function extractTextFromContent(content: any): string {
-  if (typeof content === 'string') return content.slice(0, 150);
-  if (!Array.isArray(content)) return '';
-  
-  return content
-    .map((block) => {
-      if (block.children) {
-        return block.children.map((child: any) => child.text || '').join(' ');
-      }
-      return '';
-    })
-    .join(' ')
-    .slice(0, 150);
+  try {
+    if (!content) return '';
+    if (typeof content === 'string') return content.slice(0, 150);
+    if (!Array.isArray(content)) return '';
+    if (content.length === 0) return '';
+    
+    return content
+      .map((block) => {
+        try {
+          if (!block || !block.children || !Array.isArray(block.children)) return '';
+          return block.children.map((child: any) => child?.text || '').join(' ');
+        } catch (error) {
+          return '';
+        }
+      })
+      .filter((text) => text !== '')
+      .join(' ')
+      .slice(0, 150);
+  } catch (error) {
+    console.error('Error extracting text from content:', error);
+    return '';
+  }
 }
 
 export async function generateMetadata({
