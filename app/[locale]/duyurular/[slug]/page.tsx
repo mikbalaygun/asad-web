@@ -4,20 +4,25 @@ import { notFound } from 'next/navigation';
 import AnnouncementDetailClient from '@/components/AnnouncementDetailClient';
 
 export async function generateStaticParams() {
-  const noticesTr = await getAllNotices('tr');
-  const noticesEn = await getAllNotices('en');
-  
-  const paramsTr = noticesTr.map((notice) => ({
-    locale: 'tr' as const,
-    slug: notice.slug,
-  }));
-  
-  const paramsEn = noticesEn.map((notice) => ({
-    locale: 'en' as const,
-    slug: notice.slug,
-  }));
-  
-  return [...paramsTr, ...paramsEn];
+  try {
+    const noticesTr = await getAllNotices('tr');
+    const noticesEn = await getAllNotices('en');
+    
+    const paramsTr = noticesTr.map((notice) => ({
+      locale: 'tr' as const,
+      slug: notice.slug,
+    }));
+    
+    const paramsEn = noticesEn.map((notice) => ({
+      locale: 'en' as const,
+      slug: notice.slug,
+    }));
+    
+    return [...paramsTr, ...paramsEn];
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -113,68 +118,97 @@ export default async function AnnouncementDetailPage({
 
 // Strapi blocks'u HTML'e çevir
 function convertBlocksToHTML(blocks: any): string {
-  if (!blocks) return '';
-  if (typeof blocks === 'string') return `<p>${blocks}</p>`;
-  if (!Array.isArray(blocks)) return '';
-  if (blocks.length === 0) return '';
+  try {
+    if (!blocks) return '<p>İçerik yükleniyor...</p>';
+    if (typeof blocks === 'string') return `<p>${blocks}</p>`;
+    if (!Array.isArray(blocks)) return '<p>İçerik formatı geçersiz.</p>';
+    if (blocks.length === 0) return '<p>İçerik bulunamadı.</p>';
 
-  return blocks
-    .map((block) => {
-      if (block.type === 'paragraph') {
-        const text = block.children
-          .map((child: any) => {
-            let content = child.text || '';
-            if (child.bold) content = `<strong>${content}</strong>`;
-            if (child.italic) content = `<em>${content}</em>`;
-            if (child.underline) content = `<u>${content}</u>`;
-            if (child.strikethrough) content = `<s>${content}</s>`;
-            if (child.code) content = `<code>${content}</code>`;
-            return content;
-          })
-          .join('');
-        return `<p>${text}</p>`;
-      }
+    return blocks
+      .map((block) => {
+        try {
+          if (!block || !block.type) return '';
 
-      if (block.type === 'heading') {
-        const level = block.level || 2;
-        const text = block.children.map((child: any) => child.text || '').join('');
-        return `<h${level}>${text}</h${level}>`;
-      }
+          if (block.type === 'paragraph') {
+            if (!block.children || !Array.isArray(block.children)) return '';
+            const text = block.children
+              .map((child: any) => {
+                if (!child) return '';
+                let content = child.text || '';
+                if (child.bold) content = `<strong>${content}</strong>`;
+                if (child.italic) content = `<em>${content}</em>`;
+                if (child.underline) content = `<u>${content}</u>`;
+                if (child.strikethrough) content = `<s>${content}</s>`;
+                if (child.code) content = `<code>${content}</code>`;
+                return content;
+              })
+              .join('');
+            return text ? `<p>${text}</p>` : '';
+          }
 
-      if (block.type === 'quote') {
-        const text = block.children.map((child: any) => child.text || '').join('');
-        return `<blockquote>${text}</blockquote>`;
-      }
+          if (block.type === 'heading') {
+            if (!block.children || !Array.isArray(block.children)) return '';
+            const level = block.level || 2;
+            const text = block.children.map((child: any) => child?.text || '').join('');
+            return text ? `<h${level}>${text}</h${level}>` : '';
+          }
 
-      if (block.type === 'list') {
-        const tag = block.format === 'ordered' ? 'ol' : 'ul';
-        const items = block.children
-          .map((item: any) => {
-            const text = item.children.map((child: any) => child.text || '').join('');
-            return `<li>${text}</li>`;
-          })
-          .join('');
-        return `<${tag}>${items}</${tag}>`;
-      }
+          if (block.type === 'quote') {
+            if (!block.children || !Array.isArray(block.children)) return '';
+            const text = block.children.map((child: any) => child?.text || '').join('');
+            return text ? `<blockquote>${text}</blockquote>` : '';
+          }
 
-      return '';
-    })
-    .join('\n');
+          if (block.type === 'list') {
+            if (!block.children || !Array.isArray(block.children)) return '';
+            const tag = block.format === 'ordered' ? 'ol' : 'ul';
+            const items = block.children
+              .map((item: any) => {
+                if (!item || !item.children) return '';
+                const text = item.children.map((child: any) => child?.text || '').join('');
+                return text ? `<li>${text}</li>` : '';
+              })
+              .filter((item: string) => item !== '')
+              .join('');
+            return items ? `<${tag}>${items}</${tag}>` : '';
+          }
+
+          return '';
+        } catch (blockError) {
+          console.error('Error processing block:', blockError);
+          return '';
+        }
+      })
+      .filter((html) => html !== '')
+      .join('\n');
+  } catch (error) {
+    console.error('Error converting blocks to HTML:', error);
+    return '<p>İçerik yüklenirken bir hata oluştu.</p>';
+  }
 }
 
 // İçerikten düz metin çıkar
 function extractTextFromBlocks(blocks: any): string {
-  if (!blocks) return '';
-  if (typeof blocks === 'string') return blocks;
-  if (!Array.isArray(blocks)) return '';
-  if (blocks.length === 0) return '';
-  
-  return blocks
-    .map((block) => {
-      if (block.children) {
-        return block.children.map((child: any) => child.text || '').join(' ');
-      }
-      return '';
-    })
-    .join(' ');
+  try {
+    if (!blocks) return 'Duyuru içeriği';
+    if (typeof blocks === 'string') return blocks.slice(0, 160);
+    if (!Array.isArray(blocks)) return 'Duyuru içeriği';
+    if (blocks.length === 0) return 'Duyuru içeriği';
+    
+    return blocks
+      .map((block) => {
+        try {
+          if (!block || !block.children || !Array.isArray(block.children)) return '';
+          return block.children.map((child: any) => child?.text || '').join(' ');
+        } catch (error) {
+          return '';
+        }
+      })
+      .filter((text) => text !== '')
+      .join(' ')
+      .slice(0, 160);
+  } catch (error) {
+    console.error('Error extracting text from blocks:', error);
+    return 'Duyuru içeriği';
+  }
 }
