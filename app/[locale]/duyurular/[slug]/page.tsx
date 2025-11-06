@@ -3,27 +3,9 @@ import { getNoticeBySlug, getAllNotices } from '@/lib/api/notices';
 import { notFound } from 'next/navigation';
 import AnnouncementDetailClient from '@/components/AnnouncementDetailClient';
 
-export async function generateStaticParams() {
-  try {
-    const noticesTr = await getAllNotices('tr');
-    const noticesEn = await getAllNotices('en');
-    
-    const paramsTr = noticesTr.map((notice) => ({
-      locale: 'tr' as const,
-      slug: notice.slug,
-    }));
-    
-    const paramsEn = noticesEn.map((notice) => ({
-      locale: 'en' as const,
-      slug: notice.slug,
-    }));
-    
-    return [...paramsTr, ...paramsEn];
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    return [];
-  }
-}
+// Dynamic rendering - static generation'ı devre dışı bırak
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({
   params,
@@ -31,18 +13,26 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: 'tr' | 'en' }>;
 }) {
   const { slug, locale } = await params;
-  const notice = await getNoticeBySlug(slug, locale);
+  
+  try {
+    const notice = await getNoticeBySlug(slug, locale);
 
-  if (!notice) {
+    if (!notice) {
+      return {
+        title: 'Duyuru Bulunamadı | ASAD',
+      };
+    }
+
     return {
-      title: 'Duyuru Bulunamadı | ASAD',
+      title: `${notice.title} | ASAD`,
+      description: extractTextFromBlocks(notice.content).slice(0, 160),
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Duyuru | ASAD',
     };
   }
-
-  return {
-    title: `${notice.title} | ASAD`,
-    description: extractTextFromBlocks(notice.content).slice(0, 160),
-  };
 }
 
 export default async function AnnouncementDetailPage({
