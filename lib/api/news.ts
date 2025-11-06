@@ -16,20 +16,47 @@ export async function getAllNews(locale: 'tr' | 'en' = 'tr'): Promise<News[]> {
   }
 }
 
-// Slug'a göre haber getir
+// Slug'a göre haber getir - DÜZELTİLDİ
 export async function getNewsBySlug(
   slug: string,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<News | null> {
   try {
+    // Strapi 5'te slug filtreleme için doğru söz dizimi
+    const encodedSlug = encodeURIComponent(slug);
     const response = await fetchAPI<News[]>(
-      `/news?filters[slug][$eq]=${slug}&populate=coverImage,localizations`,
+      `/news?filters[slug]=${encodedSlug}&populate[coverImage]=*&populate[localizations]=*`,
       locale
     );
-    return response.data[0] || null;
+    
+    console.log('getNewsBySlug response:', {
+      slug,
+      locale,
+      dataLength: response?.data?.length,
+      firstItem: response?.data?.[0]?.slug
+    });
+    
+    return response?.data?.[0] || null;
   } catch (error) {
     console.error('Error fetching news by slug:', error);
-    return null;
+    
+    // Alternatif yöntem: Tüm haberleri çek ve client-side filtrele
+    try {
+      console.log('Trying alternative method: fetching all news...');
+      const allNews = await getAllNews(locale);
+      const foundNews = allNews.find((news) => news.slug === slug);
+      
+      if (foundNews) {
+        console.log('Found news via alternative method:', foundNews.slug);
+        return foundNews;
+      }
+      
+      console.log('News not found via alternative method either');
+      return null;
+    } catch (altError) {
+      console.error('Alternative method also failed:', altError);
+      return null;
+    }
   }
 }
 
@@ -39,8 +66,9 @@ export async function getNewsByCategory(
   locale: 'tr' | 'en' = 'tr'
 ): Promise<News[]> {
   try {
+    const encodedCategory = encodeURIComponent(category);
     const response = await fetchAPI<News[]>(
-      `/news?filters[category][$eq]=${category}&sort=publishedTime:desc&populate=coverImage&pagination[pageSize]=100`,
+      `/news?filters[category]=${encodedCategory}&sort=publishedTime:desc&populate=coverImage&pagination[pageSize]=100`,
       locale
     );
     return response?.data || [];

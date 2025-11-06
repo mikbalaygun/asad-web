@@ -1,6 +1,6 @@
 // app/[locale]/haberler/[slug]/page.tsx
 import { notFound } from 'next/navigation';
-import { getNewsBySlug, getLatestNews } from '@/lib/api/news';
+import { getNewsBySlug, getLatestNews, getAllNews } from '@/lib/api/news';
 import { getStrapiMedia } from '@/lib/strapi';
 import NewsDetailClient from '@/components/NewsDetailClient';
 import type { News } from '@/lib/types/news';
@@ -31,7 +31,21 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function NewsDetailPage({ params }: { params: Params }) {
   const { slug, locale } = await params;
 
-  const news = await getNewsBySlug(slug, locale);
+  console.log('NewsDetailPage - Fetching news:', { slug, locale });
+  
+  let news = await getNewsBySlug(slug, locale);
+  
+  // Eğer bulunamadıysa, tüm haberleri kontrol et (slug eşleştirmesi için)
+  if (!news) {
+    console.log('News not found with API filter, trying to fetch all news...');
+    const allNews = await getAllNews(locale);
+    news = allNews.find((item) => item.slug === slug) || null;
+    
+    if (news) {
+      console.log('Found news in all news list:', news.slug);
+    }
+  }
+
   if (!news) {
     console.error('News not found for', { slug, locale });
     notFound();
