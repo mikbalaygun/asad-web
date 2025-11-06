@@ -5,8 +5,8 @@ import { getStrapiMedia } from '@/lib/strapi';
 import NewsDetailClient from '@/components/NewsDetailClient';
 import type { News } from '@/lib/types/news';
 
-export const revalidate = 60; // içerik sık güncelleniyorsa ISR
-// alternatif: export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';  // notice gibi dinamik
+export const revalidate = 0;
 
 type Params = { slug: string; locale: 'tr' | 'en' };
 
@@ -14,9 +14,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug, locale } = params;
   const news = await getNewsBySlug(slug, locale);
 
-  if (!news) {
-    return { title: 'Haber Bulunamadı | ASAD' };
-  }
+  if (!news) return { title: 'Haber Bulunamadı | ASAD' };
 
   return {
     title: `${news.Title} | ASAD`,
@@ -27,19 +25,13 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function NewsDetailPage({ params }: { params: Params }) {
   const { slug, locale } = params;
 
-  let news: News | null = null;
-  try {
-    news = await getNewsBySlug(slug, locale);
-  } catch (e) {
-    console.error('getNewsBySlug error', e);
-  }
-
+  const news = await getNewsBySlug(slug, locale);
   if (!news) {
     console.error('News not found for', { slug, locale });
     notFound();
   }
 
-  // İlgili haberler (aynı kategori, slug farklı)
+  // İlgili haberler (aynı kategori, farklı slug)
   const allNews: News[] = await getLatestNews(10, locale);
   const relatedNews: News[] = allNews
     .filter((item: News) => item.slug !== slug && item.category === news.category)
@@ -58,7 +50,7 @@ export default async function NewsDetailPage({ params }: { params: Params }) {
       locale === 'tr' ? 'tr-TR' : 'en-US',
       { year: 'numeric', month: 'long', day: 'numeric' }
     ),
-    category: news.category, // string
+    category: news.category,
     author: 'ASAD',
     readTime: calculateReadTime(news.content),
     image: news.coverImage ? getStrapiMedia(news.coverImage.url) : undefined,
@@ -87,13 +79,12 @@ export default async function NewsDetailPage({ params }: { params: Params }) {
   );
 }
 
-/* ---------------- helpers ---------------- */
+/* ---------- helpers ---------- */
 
-// Strapi rich-text blocks veya düz string'i HTML'e çevirir
+// Strapi rich-text blocks (any[]) ya da string'i HTML'e çevir
 function convertBlocksToHTML(blocks: unknown): string {
   if (!blocks) return '';
 
-  // Düz string ise paragraflara böl
   if (typeof blocks === 'string') {
     const paragraphs = blocks.split('\n\n');
     return paragraphs
@@ -111,11 +102,10 @@ function convertBlocksToHTML(blocks: unknown): string {
       .join('');
   }
 
-  // Array (blocks) ise
-  if (!Array.isArray(blocks) || blocks.length === 0) return '';
+  if (!Array.isArray(blocks) || (blocks as any[]).length === 0) return '';
 
   return (blocks as any[])
-    .map((block) => {
+    .map((block: any) => {
       if (block.type === 'paragraph') {
         const text = (block.children ?? [])
           .map((child: any) => {
@@ -158,19 +148,15 @@ function convertBlocksToHTML(blocks: unknown): string {
     .join('\n');
 }
 
-// Okuma süresi (string veya blocks desteği)
 function calculateReadTime(content: unknown): string {
   if (!content) return '3 dk';
 
   let text = '';
-
   if (typeof content === 'string') {
     text = content;
   } else if (Array.isArray(content)) {
     text = (content as any[])
-      .map((b) =>
-        b?.children ? b.children.map((c: any) => c.text ?? '').join(' ') : ''
-      )
+      .map((b) => (b?.children ? b.children.map((c: any) => c.text ?? '').join(' ') : ''))
       .join(' ');
   }
 

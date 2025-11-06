@@ -2,22 +2,17 @@
 import { fetchAPI } from '../strapi';
 import { News } from '../types/news';
 
-function mapLocaleForStrapi(l: 'tr' | 'en') {
-  return l === 'tr' ? 'tr-TR' : 'en';
-}
-
-// Tüm haberler
+// Hepsi (görsel lazım olduğu için populate var)
 export async function getAllNews(locale: 'tr' | 'en' = 'tr'): Promise<News[]> {
   try {
-    // publishedTime alanın yoksa publishedAt kullan
     const url =
-      `/news?sort=${encodeURIComponent('publishedAt:desc')}` +
-      `&populate=coverImage` +
-      `&pagination[pageSize]=100` +
-      `&publicationState=live` +
-      `&locale=${encodeURIComponent(mapLocaleForStrapi(locale))}`;
+      '/news' +
+      '?sort=publishedTime:desc' +               // şemanızda publishedTime var
+      '&populate=coverImage,localizations' +     // client bunları bekliyor
+      '&publicationState=live' +                 // taslakları alma
+      '&pagination[pageSize]=100';
 
-    const response = await fetchAPI<News[]>(url);
+    const response = await fetchAPI<News[]>(url, locale);
     return response.data ?? [];
   } catch (error) {
     console.error('Error fetching news:', error);
@@ -25,19 +20,19 @@ export async function getAllNews(locale: 'tr' | 'en' = 'tr'): Promise<News[]> {
   }
 }
 
-// Slug'a göre tek haber
+// Slug
 export async function getNewsBySlug(
   slug: string,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<News | null> {
   try {
     const url =
-      `/news?filters[slug][$eq]=${encodeURIComponent(slug)}` +
-      `&populate=coverImage,localizations` +
-      `&publicationState=live` +
-      `&locale=${encodeURIComponent(mapLocaleForStrapi(locale))}`;
+      '/news' +
+      `?filters[slug][$eq]=${encodeURIComponent(slug)}` + // slug güvenli
+      '&populate=coverImage,localizations' +
+      '&publicationState=live';
 
-    const response = await fetchAPI<News[]>(url);
+    const response = await fetchAPI<News[]>(url, locale);
     return response.data?.[0] ?? null;
   } catch (error) {
     console.error('Error fetching news by slug:', error);
@@ -45,20 +40,20 @@ export async function getNewsBySlug(
   }
 }
 
-// En son N haber
+// En son N
 export async function getLatestNews(
   limit: number = 3,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<News[]> {
   try {
     const url =
-      `/news?sort=${encodeURIComponent('publishedAt:desc')}` + // gerekirse publishedTime:desc
-      `&populate=coverImage` +
-      `&pagination[limit]=${encodeURIComponent(String(limit))}` +
-      `&publicationState=live` +
-      `&locale=${encodeURIComponent(mapLocaleForStrapi(locale))}`;
+      '/news' +
+      '?sort=publishedTime:desc' +               // listedeki sıralama
+      '&populate=coverImage,localizations' +
+      '&publicationState=live' +
+      `&pagination[limit]=${encodeURIComponent(String(limit))}`;
 
-    const response = await fetchAPI<News[]>(url);
+    const response = await fetchAPI<News[]>(url, locale);
     return response.data ?? [];
   } catch (error) {
     console.error('Error fetching latest news:', error);
