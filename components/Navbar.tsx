@@ -62,6 +62,7 @@ export default function Navbar() {
       `/${locale}/hakkimizda/yonetim-kurulu`,
       `/${locale}/hakkimizda/baskan`,
       `/${locale}/hakkimizda/temsilci`,
+      `/${locale}/hakkimizda/gep-plani`,
       `/${locale}/hakkimizda/sponsorlarimiz`,
       `/${locale}/galeri/foto`,
       `/${locale}/galeri/video`,
@@ -98,6 +99,7 @@ export default function Navbar() {
     { label: t('nav.aboutPages.management'), href: `/${locale}/hakkimizda/yonetim-kurulu` },
     { label: t('nav.aboutPages.president'), href: `/${locale}/hakkimizda/baskan` },
     { label: t('nav.aboutPages.representative'), href: `/${locale}/hakkimizda/temsilci` },
+    { label: t('nav.aboutPages.gep'), href: `/${locale}/hakkimizda/gep-plani` },
     { label: t('nav.aboutPages.sponsors'), href: `/${locale}/hakkimizda/sponsorlarimiz` },
   ];
 

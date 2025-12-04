@@ -4,11 +4,11 @@ import { PhotoGalleryImage, VideoGalleryItem } from '../types/gallery';
 
 // ========== PHOTO GALLERY ==========
 
-// Tüm aktif fotoğrafları getir
+// Tüm aktif fotoğrafları getir (En yeniden eskiye)
 export async function getAllPhotos(locale: 'tr' | 'en' = 'tr'): Promise<PhotoGalleryImage[]> {
   try {
     const response = await fetchAPI<PhotoGalleryImage[]>(
-      '/photo-galleries?filters[isActive][$eq]=true&sort=order:asc,publishedDate:desc&populate=image',
+      '/photo-galleries?filters[isActive][$eq]=true&sort=publishedDate:desc&populate=image',
       locale
     );
     return response.data;
@@ -18,14 +18,14 @@ export async function getAllPhotos(locale: 'tr' | 'en' = 'tr'): Promise<PhotoGal
   }
 }
 
-// Kategoriye göre fotoğrafları getir
+// Kategoriye göre fotoğrafları getir (En yeniden eskiye)
 export async function getPhotosByCategory(
   category: string,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<PhotoGalleryImage[]> {
   try {
     const response = await fetchAPI<PhotoGalleryImage[]>(
-      `/photo-galleries?filters[category][$eq]=${category}&filters[isActive][$eq]=true&sort=order:asc,publishedDate:desc&populate=image`,
+      `/photo-galleries?filters[category][$eq]=${category}&filters[isActive][$eq]=true&sort=publishedDate:desc&populate=image`,
       locale
     );
     return response.data;
@@ -54,11 +54,11 @@ export async function getLatestPhotos(
 
 // ========== VIDEO GALLERY ==========
 
-// Tüm aktif videoları getir
+// Tüm aktif videoları getir (En yeniden eskiye)
 export async function getAllVideos(locale: 'tr' | 'en' = 'tr'): Promise<VideoGalleryItem[]> {
   try {
     const response = await fetchAPI<VideoGalleryItem[]>(
-      '/video-galleries?filters[isActive][$eq]=true&sort=order:asc,publishedDate:desc&populate=thumbnail',
+      '/video-galleries?filters[isActive][$eq]=true&sort=publishedDate:desc&populate=thumbnail',
       locale
     );
     return response.data;
@@ -68,14 +68,14 @@ export async function getAllVideos(locale: 'tr' | 'en' = 'tr'): Promise<VideoGal
   }
 }
 
-// Kategoriye göre videoları getir
+// Kategoriye göre videoları getir (En yeniden eskiye)
 export async function getVideosByCategory(
   category: string,
   locale: 'tr' | 'en' = 'tr'
 ): Promise<VideoGalleryItem[]> {
   try {
     const response = await fetchAPI<VideoGalleryItem[]>(
-      `/video-galleries?filters[category][$eq]=${category}&filters[isActive][$eq]=true&sort=order:asc,publishedDate:desc&populate=thumbnail`,
+      `/video-galleries?filters[category][$eq]=${category}&filters[isActive][$eq]=true&sort=publishedDate:desc&populate=thumbnail`,
       locale
     );
     return response.data;

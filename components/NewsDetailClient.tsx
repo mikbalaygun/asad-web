@@ -66,7 +66,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero - Düzeltilmiş */}
+      {/* Hero Section (Arka Plan) */}
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -98,7 +98,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
           </div>
 
           {/* Category Badge */}
-          <span className="inline-block px-4 py-2 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-sm font-semibold mb-6">
+          <span className="inline-block px-4 py-2 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-sm font-semibold mb-6 shadow-lg">
             {news.category}
           </span>
 
@@ -108,21 +108,21 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
           </h1>
 
           {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-6 text-white/80">
+          <div className="flex flex-wrap items-center gap-6 text-white/80 text-sm font-medium">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               <span>{news.author}</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <time>{news.date}</time>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{news.readTime}</span>
@@ -136,13 +136,13 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
         
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               
               {/* Social Share Sidebar */}
               <div className="lg:col-span-1">
                 <div className="lg:sticky lg:top-24 space-y-3">
-                  <div className="text-white/60 text-sm mb-4 hidden lg:block">
+                  <div className="text-white/60 text-sm mb-4 hidden lg:block font-medium">
                     {locale === 'tr' ? 'Paylaş' : 'Share'}
                   </div>
                   
@@ -151,7 +151,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                     className="w-10 h-10 rounded-lg bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/30 flex items-center justify-center text-white/60 hover:text-blue-400 transition-all"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.954 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
                   </button>
 
@@ -191,23 +191,28 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
               </div>
 
               {/* Main Content */}
-              <div className="lg:col-span-11">
-                {/* Haber Görseli (Strapi'den) */}
+              <div className="lg:col-span-11 lg:col-start-2">
+                
+                {/* HABER GÖRSELİ: Optimize Edildi */}
                 {news.image && (
-                  <div className="relative w-full h-96 mb-8 rounded-2xl overflow-hidden">
+                  <div className="relative w-full aspect-video mb-10 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
                     <Image
                       src={news.image}
                       alt={news.title}
                       fill
-                      className="object-cover"
+                      priority
+                      quality={100}
+                      sizes="(max-width: 1200px) 100vw, 1200px"
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep/30 to-transparent pointer-events-none" />
                   </div>
                 )}
 
                 {/* Article Content */}
                 <article className="prose prose-invert prose-lg max-w-none">
                   <div 
-                    className="news-content"
+                    className="news-content-body"
                     dangerouslySetInnerHTML={{ __html: news.content }}
                   />
                 </article>
@@ -215,13 +220,16 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                 {/* Tags */}
                 {news.tags && news.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-white/10">
-                    <span className="text-white/60 text-sm">
+                    <span className="text-white/60 text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                      </svg>
                       {locale === 'tr' ? 'Etiketler:' : 'Tags:'}
                     </span>
                     {news.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-sm hover:bg-white/10 transition-colors cursor-pointer"
+                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-sm hover:bg-ocean-cyan/10 hover:border-ocean-cyan/30 hover:text-ocean-cyan transition-all cursor-pointer"
                       >
                         #{tag}
                       </span>
@@ -242,9 +250,9 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                         <Link
                           key={loc.id}
                           href={`/${loc.locale}/haberler/${loc.slug}`}
-                          className="px-4 py-2 bg-ocean-cyan/20 hover:bg-ocean-cyan/30 border border-ocean-cyan/30 rounded-lg text-ocean-cyan font-medium transition-all"
+                          className="px-4 py-2 bg-ocean-cyan/10 hover:bg-ocean-cyan/20 border border-ocean-cyan/30 rounded-lg text-ocean-cyan font-medium transition-all flex items-center gap-2"
                         >
-                          {loc.locale === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'}
+                          <span>{loc.locale === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'}</span>
                         </Link>
                       ))}
                     </div>
@@ -262,34 +270,39 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
           <div className="absolute inset-0 bg-gradient-to-b from-mid to-deep" />
           
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <div className="mb-12 flex items-center gap-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
                 {locale === 'tr' ? 'İlgili Haberler' : 'Related News'}
               </h2>
+              <div className="h-px bg-white/10 flex-1"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedNews.map((item) => (
-                <Link key={item.id} href={`/${locale}/haberler/${item.slug}`}>
-                  <div className="group backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-ocean-cyan/30 transition-all h-full">
+                <Link key={item.id} href={`/${locale}/haberler/${item.slug}`} className="group h-full">
+                  <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-ocean-cyan/30 transition-all h-full flex flex-col hover:shadow-lg hover:shadow-ocean-cyan/10">
                     {item.image && (
-                      <div className="relative w-full h-48">
+                      <div className="relative w-full aspect-video overflow-hidden">
                         <Image
                           src={item.image}
                           alt={item.title}
                           fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
                         />
+                         <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep/80 via-transparent to-transparent opacity-60" />
                       </div>
                     )}
-                    <div className="p-6">
-                      <span className="inline-block px-3 py-1 rounded-full bg-ocean-cyan/10 text-ocean-cyan text-xs font-semibold mb-3">
-                        {item.category}
-                      </span>
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="mb-3">
+                         <span className="inline-block px-3 py-1 rounded-full bg-ocean-cyan/10 text-ocean-cyan text-xs font-semibold">
+                          {item.category}
+                        </span>
+                      </div>
                       <h3 className="text-lg font-bold text-white/95 mb-3 group-hover:text-ocean-cyan transition-colors line-clamp-2">
                         {item.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-white/50 text-sm">
+                      <div className="mt-auto flex items-center gap-2 text-white/50 text-sm pt-4 border-t border-white/5">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
@@ -303,7 +316,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
 
             <div className="text-center mt-12">
               <Link href={`/${locale}/haberler`}>
-                <button className="px-8 py-4 bg-gradient-to-r from-ocean-cyan/80 to-ocean-navy/80 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
+                <button className="px-8 py-4 bg-gradient-to-r from-ocean-cyan/80 to-ocean-navy/80 text-white font-semibold rounded-xl shadow-lg hover:shadow-ocean-cyan/20 transition-all inline-flex items-center gap-2 hover:-translate-y-1">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
@@ -315,28 +328,77 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
         </section>
       )}
 
+      {/* Global Styles for Dynamic Content */}
       <style jsx global>{`
-        .news-content h2 {
-          font-size: 1.875rem;
+        .news-content-body {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 1.125rem;
+          line-height: 1.8;
+        }
+
+        .news-content-body h2 {
+          font-size: 2rem;
           font-weight: 700;
+          color: #ffffff;
+          margin-top: 3rem;
+          margin-bottom: 1.5rem;
+          letter-spacing: -0.02em;
+        }
+        
+        .news-content-body h3 {
+          font-size: 1.5rem;
+          font-weight: 600;
           color: rgba(255, 255, 255, 0.95);
-          margin-top: 2.5rem;
+          margin-top: 2rem;
           margin-bottom: 1rem;
         }
-        .news-content p {
-          color: rgba(255, 255, 255, 0.75);
-          line-height: 1.8;
+
+        /* İçerik içindeki resimlerin optimizasyonu */
+        .news-content-body img {
+          width: 100%;
+          height: auto;
+          border-radius: 1rem;
+          margin: 2.5rem 0;
+          box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          object-fit: cover;
+        }
+
+        .news-content-body p {
           margin-bottom: 1.5rem;
         }
-        .news-content blockquote {
-          border-left: 4px solid rgb(74, 155, 142);
+
+        .news-content-body ul {
+          list-style-type: disc;
           padding-left: 1.5rem;
-          margin: 2rem 0;
-          font-style: italic;
+          margin-bottom: 1.5rem;
           color: rgba(255, 255, 255, 0.8);
-          background: rgba(74, 155, 142, 0.05);
-          padding: 1.5rem;
-          border-radius: 0.5rem;
+        }
+        
+        .news-content-body li {
+          margin-bottom: 0.5rem;
+        }
+
+        .news-content-body blockquote {
+          border-left: 4px solid #06b6d4;
+          padding-left: 2rem;
+          margin: 2.5rem 0;
+          font-style: italic;
+          font-size: 1.25rem;
+          color: rgba(255, 255, 255, 0.9);
+          background: linear-gradient(to right, rgba(6, 182, 212, 0.1), transparent);
+          padding: 1.5rem 2rem;
+          border-radius: 0 1rem 1rem 0;
+        }
+
+        .news-content-body a {
+          color: #06b6d4;
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          transition: all 0.2s;
+        }
+        .news-content-body a:hover {
+          color: #22d3ee;
         }
       `}</style>
     </div>

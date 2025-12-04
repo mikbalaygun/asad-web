@@ -23,17 +23,22 @@ interface Props {
 
 function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
   return (
-    <article className="group h-full">
-      <Link href={`/${locale}/haberler/${item.slug}`} className="block h-full">
-        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
-          {/* Image */}
-          <div className="relative w-full h-64 overflow-hidden bg-ocean-navy/20">
+    <article className="group h-full flex flex-col">
+      <Link href={`/${locale}/haberler/${item.slug}`} className="block h-full w-full">
+        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-ocean-cyan/20 hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
+          
+          {/* GÖRSEL ALANI: Aspect-Video (16:9) kullanılarak kesilmeler önlendi */}
+          <div className="relative w-full aspect-video overflow-hidden bg-ocean-navy/20">
             {item.image ? (
               <Image
                 src={item.image}
                 alt={item.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                /* Sizes: Tarayıcıya doğru boyutu indirterek netlik sağlar */
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                /* Quality: Listeleme için %90 kalite idealdir */
+                quality={90}
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-ocean-cyan/10 to-ocean-navy/10 flex items-center justify-center">
@@ -42,43 +47,46 @@ function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
                 </svg>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep via-transparent to-transparent" />
-            <div className="absolute top-4 left-4">
-              <span className="px-3 py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-xs font-semibold">
+            
+            {/* Overlay: Sadece alt kısımda okunabilirlik için hafif karartma */}
+            <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep/90 via-transparent to-transparent opacity-80" />
+            
+            <div className="absolute top-4 left-4 z-10">
+              <span className="px-3 py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-md text-white text-xs font-bold shadow-lg tracking-wide">
                 {item.category}
               </span>
             </div>
           </div>
 
-          {/* Content */}
+          {/* İÇERİK ALANI */}
           <div className="p-6 flex-1 flex flex-col">
-            <div className="flex items-center gap-4 text-white/50 text-sm mb-3">
+            <div className="flex items-center gap-4 text-white/50 text-xs font-medium mb-3 tracking-wide">
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <time>{item.date}</time>
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{item.readTime}</span>
               </div>
             </div>
 
-            <h3 className="text-xl font-bold text-white/95 mb-3 group-hover:text-ocean-cyan/90 transition-colors line-clamp-2">
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-ocean-cyan transition-colors line-clamp-2 leading-snug">
               {item.title}
             </h3>
 
-            <p className="text-white/60 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
+            <p className="text-white/60 text-sm leading-relaxed mb-4 line-clamp-3">
               {item.excerpt}
             </p>
 
-            <div className="flex items-center gap-2 text-ocean-cyan/80 text-sm font-medium pt-4 border-t border-white/5 group-hover:gap-3 transition-all">
+            <div className="mt-auto flex items-center gap-2 text-ocean-cyan text-sm font-semibold pt-4 border-t border-white/5 group-hover:gap-3 transition-all">
               <span>{locale === 'tr' ? 'Devamını Oku' : 'Read More'}</span>
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </div>
           </div>
@@ -124,7 +132,7 @@ export default function NewsListingClient({ news, locale }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero - Arka plan sabit */}
+      {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -220,7 +228,7 @@ export default function NewsListingClient({ news, locale }: Props) {
           </div>
 
           {paginatedNews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {paginatedNews.map((item) => (
                 <NewsCard key={item.id} item={item} locale={locale} />
               ))}

@@ -33,6 +33,7 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
           { label: 'Denetleme Kurulu', href: `/${locale}/hakkimizda/denetleme-kurulu` },
           { label: 'Başkan', href: `/${locale}/hakkimizda/baskan` },
           { label: 'Temsilci', href: `/${locale}/hakkimizda/temsilci` },
+          { label: 'GEP Planı', href: `/${locale}/hakkimizda/gep-plani` },
           { label: 'Sponsorlarımız', href: `/${locale}/hakkimizda/sponsorlarimiz` },
         ],
         services: [
@@ -65,6 +66,7 @@ export default function Footer({ locale, contactInfo }: FooterProps) {
           { label: 'Audit Board', href: `/${locale}/hakkimizda/denetleme-kurulu` },
           { label: 'President', href: `/${locale}/hakkimizda/baskan` },
           { label: 'Representative', href: `/${locale}/hakkimizda/temsilci` },
+          { label: 'GEP Plan', href: `/${locale}/hakkimizda/gep-plani` },
           { label: 'Our Sponsors', href: `/${locale}/hakkimizda/sponsorlarimiz` },
         ],
         services: [
