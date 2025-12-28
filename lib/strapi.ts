@@ -19,10 +19,10 @@ export async function fetchAPI<T>(
   options: RequestInit = {}
 ): Promise<StrapiResponse<T>> {
   const url = new URL(`${STRAPI_URL}/api${path}`);
-  
+
   // Locale'i ekle
   url.searchParams.append('locale', locale);
-  
+
   // Sadece path'de populate yoksa ekle
   if (!path.includes('populate')) {
     url.searchParams.append('populate', '*');
@@ -48,7 +48,7 @@ export async function fetchAPI<T>(
 }
 
 export function getStrapiMedia(url: string | null | undefined): string {
-  if (!url) return '/placeholder.jpg';
+  if (!url) return '';
   if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
 }

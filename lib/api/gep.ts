@@ -4,15 +4,21 @@ import { GepTeamMember, GepDocument } from '@/lib/types/gep';
 export const gepTeamMembers: GepTeamMember[] = [
   {
     id: 1,
-    firstName: 'Nil',
-    lastName: 'Kıncal',
-    role: 'Yönetim Kurulu',
+    firstName: 'Yönetim',
+    lastName: 'Kurulu',
+    role: '',
   },
   {
     id: 2,
+    firstName: 'Nil',
+    lastName: 'Kıncal',
+    role: '',
+  },
+  {
+    id: 3,
     firstName: 'Hale',
     lastName: 'Telli',
-    role: 'Yönetim Kurulu',
+    role: '',
   },
 ];
 

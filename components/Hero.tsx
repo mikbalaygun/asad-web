@@ -26,8 +26,8 @@ export default function Hero({ locale }: Props) {
       className="relative h-screen overflow-hidden bg-ocean-deep"
     >
       {/* Background Image */}
-      <motion.div 
-        className="absolute inset-0" 
+      <motion.div
+        className="absolute inset-0"
         style={{ scale, willChange: 'transform' }}
       >
         <Image
@@ -39,7 +39,7 @@ export default function Hero({ locale }: Props) {
           priority
           quality={90}
         />
-        
+
         {/* Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep/40 via-transparent to-ocean-deep" />
         <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep via-ocean-deep/60 to-transparent" />
@@ -69,23 +69,23 @@ export default function Hero({ locale }: Props) {
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-lg leading-relaxed">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Anadolu sularının kültürel ve doğal mirasını araştırıyor, koruyor ve paylaşıyoruz'
                 : 'We research, protect and share the cultural and natural heritage of Anatolian waters'
               }
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Link href={`/${locale}/hakkimizda`}>
                 <motion.button
-                  className="group relative px-8 py-4 bg-ocean-cyan text-ocean-deep font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(46,196,182,0.8)] w-full sm:w-auto"
+                  className="group relative px-5 py-3 sm:px-8 sm:py-4 bg-ocean-cyan text-ocean-deep font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(46,196,182,0.8)] w-full sm:w-auto text-sm sm:text-base"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {locale === 'tr' ? 'Hakkımızda' : 'About Us'}
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </span>
@@ -94,7 +94,7 @@ export default function Hero({ locale }: Props) {
 
               <Link href={`/${locale}/hizmetler`}>
                 <motion.button
-                  className="px-8 py-4 border-2 border-ocean-cyan text-white font-semibold rounded-xl hover:bg-ocean-cyan/10 transition-all duration-300 backdrop-blur-sm bg-ocean-deep/40 w-full sm:w-auto"
+                  className="px-5 py-3 sm:px-8 sm:py-4 border-2 border-ocean-cyan text-white font-semibold rounded-xl hover:bg-ocean-cyan/10 transition-all duration-300 backdrop-blur-sm bg-ocean-deep/40 w-full sm:w-auto text-sm sm:text-base"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -104,7 +104,7 @@ export default function Hero({ locale }: Props) {
 
               <Link href={`/${locale}/iletisim`}>
                 <motion.button
-                  className="px-8 py-4 border-2 border-white/60 text-white font-semibold rounded-xl hover:bg-white hover:text-ocean-deep transition-all duration-300 backdrop-blur-sm bg-ocean-deep/40 w-full sm:w-auto"
+                  className="px-5 py-3 sm:px-8 sm:py-4 border-2 border-white/60 text-white font-semibold rounded-xl hover:bg-white hover:text-ocean-deep transition-all duration-300 backdrop-blur-sm bg-ocean-deep/40 w-full sm:w-auto text-sm sm:text-base"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >

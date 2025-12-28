@@ -11,8 +11,7 @@ interface AnnouncementItem {
   title: string;
   content: string;
   priority: string;
-  startDate: string;
-  endDate: string;
+  date: string;
   isActive: boolean;
 }
 
@@ -30,47 +29,47 @@ const priorityConfig = {
     icon: '🚨'
   },
   high: {
-    bg: 'bg-orange-500/20',
-    border: 'border-orange-500/30',
-    text: 'text-orange-400',
+    bg: 'bg-red-500/20',
+    border: 'border-red-500/30',
+    text: 'text-red-400',
     label: { tr: 'Yüksek', en: 'High' },
-    icon: '⚠️'
+    icon: '🔴'
   },
   medium: {
     bg: 'bg-yellow-500/20',
     border: 'border-yellow-500/30',
     text: 'text-yellow-400',
     label: { tr: 'Orta', en: 'Medium' },
-    icon: 'ℹ️'
+    icon: '🟡'
   },
   low: {
-    bg: 'bg-blue-500/20',
-    border: 'border-blue-500/30',
-    text: 'text-blue-400',
+    bg: 'bg-green-500/20',
+    border: 'border-green-500/30',
+    text: 'text-green-400',
     label: { tr: 'Düşük', en: 'Low' },
-    icon: '📌'
+    icon: '🟢'
   }
 };
 
 function AnnouncementCard({ item, locale }: { item: AnnouncementItem; locale: string }) {
   const config = priorityConfig[item.priority as keyof typeof priorityConfig] || priorityConfig.medium;
-  
+
   return (
     <article className="group h-full">
       <Link href={`/${locale}/duyurular/${item.slug}`} className="block h-full">
-        <div className={`relative backdrop-blur-lg ${config.bg} border ${config.border} rounded-2xl p-6 hover:shadow-xl transition-all duration-300 h-full flex flex-col`}>
+        <div className={`relative backdrop-blur-lg ${config.bg} border ${config.border} rounded-2xl p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col`}>
           {/* Priority Badge */}
           <div className="flex items-center justify-between mb-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${config.bg} border ${config.border} ${config.text} text-sm font-semibold`}>
               <span>{config.icon}</span>
               <span>{config.label[locale as 'tr' | 'en']}</span>
             </span>
-            
+
             <div className="flex items-center gap-2 text-white/50 text-sm">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <time>{item.startDate}</time>
+              <time>{item.date}</time>
             </div>
           </div>
 
@@ -84,19 +83,10 @@ function AnnouncementCard({ item, locale }: { item: AnnouncementItem; locale: st
             {item.content}
           </p>
 
-          {/* End Date */}
-          <div className="flex items-center gap-2 text-white/50 text-sm pt-4 border-t border-white/10 mt-auto">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>
-              {locale === 'tr' ? 'Geçerlilik:' : 'Valid until:'} {item.endDate}
-            </span>
-          </div>
-
           {/* Read More Arrow */}
-          <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg className="w-5 h-5 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+            <span className="text-ocean-cyan text-sm">{locale === 'tr' ? 'Devamını Oku' : 'Read More'}</span>
+            <svg className="w-5 h-5 text-ocean-cyan opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </div>
@@ -111,7 +101,6 @@ export default function AnnouncementsListClient({ announcements, locale }: Props
 
   const priorities = [
     { key: 'Tümü', label: { tr: 'Tümü', en: 'All' } },
-    { key: 'urgent', label: { tr: 'Acil', en: 'Urgent' } },
     { key: 'high', label: { tr: 'Yüksek', en: 'High' } },
     { key: 'medium', label: { tr: 'Orta', en: 'Medium' } },
     { key: 'low', label: { tr: 'Düşük', en: 'Low' } }
@@ -152,7 +141,7 @@ export default function AnnouncementsListClient({ announcements, locale }: Props
               {locale === 'tr' ? 'Duyurular' : 'Announcements'}
             </h1>
             <p className="text-lg text-white/70 mb-6">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Güncel duyurular ve önemli bildirimler'
                 : 'Current announcements and important notifications'
               }
@@ -164,11 +153,10 @@ export default function AnnouncementsListClient({ announcements, locale }: Props
                 <button
                   key={priority.key}
                   onClick={() => setActivePriority(priority.key)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${
-                    activePriority === priority.key 
-                      ? 'bg-ocean-cyan text-white shadow-lg' 
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
-                  }`}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${activePriority === priority.key
+                    ? 'bg-ocean-cyan text-white shadow-lg'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
+                    }`}
                 >
                   {priority.label[locale as 'tr' | 'en']}
                 </button>
@@ -181,7 +169,7 @@ export default function AnnouncementsListClient({ announcements, locale }: Props
       {/* Announcements Grid */}
       <section className="relative py-12">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-white/60 text-sm">
             {filteredAnnouncements.length} {locale === 'tr' ? 'duyuru bulundu' : 'announcements found'}

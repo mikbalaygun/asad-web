@@ -2,18 +2,19 @@
 
 export interface President {
   id: number;
-  documentId: string;
+  documentId?: string;
   firstName: string;
   lastName: string;
-  photo?: {
+  photo?: string | {
     id: number;
     url: string;
-    formats?: any;
+    formats?: unknown;
   };
-  message: any; // Rich text blocks veya string
+  message: unknown; // Rich text blocks veya string (Turkish)
+  messageEn?: unknown; // Rich text blocks veya string (English)
   phone: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
 }

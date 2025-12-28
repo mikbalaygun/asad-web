@@ -21,15 +21,35 @@ interface Props {
   locale: string;
 }
 
-function ArticleCard({ item, locale }: { item: ArticleItem; locale: string }) {
+const categoryTranslations: Record<string, string> = {
+  'Genel': 'General',
+  'Dalış': 'Diving',
+  'Etkinlik': 'Event',
+  'Keşif': 'Discovery',
+  'Eğitim': 'Training',
+  'Duyuru': 'Announcement',
+  'Basın': 'Press',
+  'Proje': 'Project',
+  'Tümü': 'All',
+  'Bilimsel': 'Scientific',
+  'Teknik': 'Technical',
+  'Araştırma': 'Research'
+};
+
+const getCategoryLabel = (cat: string, locale: string) => {
+  if (locale === 'tr') return cat;
+  return categoryTranslations[cat] || cat;
+};
+
+function ArticleCard({ item, locale, priority = false }: { item: ArticleItem; locale: string; priority?: boolean }) {
   return (
-    <article className="group">
-      <Link href={`/${locale}/makaleler/${item.slug}`}>
-        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6 hover:shadow-xl hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
+    <article className="group h-full">
+      <Link href={`/${locale}/makaleler/${item.slug}`} className="block h-full">
+        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6 hover:shadow-2xl hover:shadow-ocean-cyan/10 hover:border-ocean-cyan/30 hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
           {/* Category Badge */}
           <div className="flex items-center justify-between mb-4">
             <span className="inline-block px-3 py-1 rounded-full bg-ocean-cyan/20 border border-ocean-cyan/30 text-ocean-cyan text-xs font-semibold">
-              {item.category}
+              {getCategoryLabel(item.category, locale)}
             </span>
             <span className="text-white/50 text-sm">{item.readTime}</span>
           </div>
@@ -124,7 +144,7 @@ export default function ArticlesListClient({ articles, locale }: Props) {
               {locale === 'tr' ? 'Makaleler' : 'Articles'}
             </h1>
             <p className="text-lg text-white/70 mb-6">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Sualtı dünyası, deniz bilimleri ve dalış hakkında bilimsel ve eğitici makaleler'
                 : 'Scientific and educational articles about underwater world, marine sciences and diving'
               }
@@ -153,13 +173,12 @@ export default function ArticlesListClient({ articles, locale }: Props) {
                         setActiveCategory(category);
                         setCurrentPage(1);
                       }}
-                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${
-                        activeCategory === category 
-                          ? 'bg-ocean-cyan text-white shadow-lg' 
+                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${activeCategory === category
+                          ? 'bg-ocean-cyan text-white shadow-lg'
                           : 'bg-white/5 text-white/70 hover:bg-white/10'
-                      }`}
+                        }`}
                     >
-                      {category}
+                      {getCategoryLabel(category, locale)}
                     </button>
                   ))}
                 </div>
@@ -172,7 +191,7 @@ export default function ArticlesListClient({ articles, locale }: Props) {
       {/* Articles Grid */}
       <section className="relative py-12">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-white/60 text-sm">
             {filteredArticles.length} {locale === 'tr' ? 'makale bulundu' : 'articles found'}
@@ -181,16 +200,21 @@ export default function ArticlesListClient({ articles, locale }: Props) {
           {paginatedArticles.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {paginatedArticles.map((item) => (
-                  <ArticleCard key={item.id} item={item} locale={locale} />
+                {paginatedArticles.map((item, index) => (
+                  <ArticleCard
+                    key={item.id}
+                    item={item}
+                    locale={locale}
+                    priority={index < 6 && currentPage === 1}
+                  />
                 ))}
               </div>
 
               {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2">
-                  <button 
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} 
-                    disabled={currentPage === 1} 
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
                     className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -202,17 +226,16 @@ export default function ArticlesListClient({ articles, locale }: Props) {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${
-                        currentPage === page ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10'
-                      }`}
+                      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${currentPage === page ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10'
+                        }`}
                     >
                       {page}
                     </button>
                   ))}
 
-                  <button 
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} 
-                    disabled={currentPage === totalPages} 
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
                     className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

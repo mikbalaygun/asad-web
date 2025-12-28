@@ -1,17 +1,15 @@
-// app/[locale]/page.tsx
 import AboutSection from '@/components/AboutSection';
 import AtaturkQuoteSection from '@/components/AtaturkQuoteSection';
 import Hero from '@/components/Hero';
 import NewsSectionHome from '@/components/NewsSectionHome';
 import ServicesSectionServer from '@/components/ServicesSectionServer';
-import { getLatestNews } from '@/lib/api/news';
+import { getLatestNews, getMediaUrl } from '@/lib/api/news'; // getMediaUrl imported from news api which re-exports it
 import { getLatestNotices } from '@/lib/api/notices';
-import { getStrapiMedia } from '@/lib/strapi';
-import { News } from '@/lib/types/news';
-import { Notice } from '@/lib/types/notice';
+import { News } from '@/lib/api/news'; // Use type from API file
+import { Notice } from '@/lib/api/notices'; // Use type from API file
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60; // ISR: Revalidate every 60 seconds
 
 export default async function Home({
   params,
@@ -19,11 +17,11 @@ export default async function Home({
   params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
   const { locale } = await params;
-  
-  // Strapi'den veri çek
+
+  // Custom API'den veri çek
   let newsData: News[] = [];
   let noticesData: Notice[] = [];
-  
+
   try {
     [newsData, noticesData] = await Promise.all([
       getLatestNews(3, locale),
@@ -37,9 +35,9 @@ export default async function Home({
   const formattedNews = newsData.map((item) => ({
     id: item.id,
     slug: item.slug,
-    title: item.Title,
-    excerpt: item.excerpt || '',
-    date: new Date(item.publishedTime ?? item.publishedAt).toLocaleDateString(
+    title: item.title,
+    excerpt: item.excerpt || extractTextFromContent(item.content),
+    date: new Date(item.publishedTime).toLocaleDateString(
       locale === 'tr' ? 'tr-TR' : 'en-US',
       {
         year: 'numeric',
@@ -48,7 +46,7 @@ export default async function Home({
       }
     ),
     category: item.category || (locale === 'tr' ? 'Genel' : 'General'),
-    image: item.coverImage ? getStrapiMedia(item.coverImage.url) : undefined,
+    image: getMediaUrl(item.coverImage),
   }));
 
   // Format notices (announcements)
@@ -56,9 +54,9 @@ export default async function Home({
     id: item.id,
     slug: item.slug,
     title: item.title,
-    content: extractTextFromContent(item.content),
+    content: item.excerpt || extractTextFromContent(item.content),
     priority: item.priority,
-    startDate: new Date(item.startDate).toLocaleDateString(
+    startDate: new Date(item.publishedDate).toLocaleDateString(
       locale === 'tr' ? 'tr-TR' : 'en-US',
       {
         year: 'numeric',
@@ -73,10 +71,9 @@ export default async function Home({
       <Hero locale={locale} />
       <AboutSection locale={locale} />
       <AtaturkQuoteSection locale={locale} />
-      {/* Services Section - Strapi'den veri çeker */}
       <ServicesSectionServer locale={locale} />
-      <NewsSectionHome 
-        news={formattedNews} 
+      <NewsSectionHome
+        news={formattedNews}
         announcements={formattedAnnouncements}
         locale={locale}
       />
@@ -84,30 +81,12 @@ export default async function Home({
   );
 }
 
-// Helper function
-function extractTextFromContent(content: any): string {
-  try {
-    if (!content) return '';
-    if (typeof content === 'string') return content.slice(0, 150);
-    if (!Array.isArray(content)) return '';
-    if (content.length === 0) return '';
-    
-    return content
-      .map((block) => {
-        try {
-          if (!block || !block.children || !Array.isArray(block.children)) return '';
-          return block.children.map((child: any) => child?.text || '').join(' ');
-        } catch (error) {
-          return '';
-        }
-      })
-      .filter((text) => text !== '')
-      .join(' ')
-      .slice(0, 150);
-  } catch (error) {
-    console.error('Error extracting text from content:', error);
-    return '';
-  }
+// Helper function to strip HTML tags
+function extractTextFromContent(content: string): string {
+  if (!content) return '';
+  // Remove HTML tags
+  const text = content.replace(/<[^>]*>?/gm, '');
+  return text.slice(0, 150) + (text.length > 150 ? '...' : '');
 }
 
 export async function generateMetadata({
@@ -116,7 +95,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   return {
     title: locale === 'tr' ? 'Ana Sayfa | ASAD' : 'Home | ASAD',
     description:

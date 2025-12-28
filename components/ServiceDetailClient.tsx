@@ -60,73 +60,60 @@ export default function ServiceDetailClient({ service, relatedServices, locale }
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative min-h-[60vh] overflow-hidden">
+      {/* Hero - Static Background */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
-          {service.image ? (
-            <Image
-              src={service.image}
-              alt={service.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-ocean-cyan/20 to-ocean-navy/20" />
-          )}
+          <Image
+            src="/news/news-4.png"
+            alt="Background"
+            fill
+            className="object-cover"
+            priority
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep/80 via-ocean-deep/70 to-ocean-deep" />
         </div>
 
-        <div className="absolute top-24 left-0 right-0 z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <Link href={`/${locale}/hizmetler`} className="hover:text-ocean-cyan transition-colors">
-                {locale === 'tr' ? 'Hizmetler' : 'Services'}
-              </Link>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
-            </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-white/80 mb-8">
+            <Link href={`/${locale}`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Ana Sayfa' : 'Home'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <Link href={`/${locale}/hizmetler`} className="hover:text-ocean-cyan transition-colors">
+              {locale === 'tr' ? 'Hizmetler' : 'Services'}
+            </Link>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-white">{locale === 'tr' ? 'Detay' : 'Detail'}</span>
           </div>
-        </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 pb-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-ocean-cyan/90 backdrop-blur-sm flex items-center justify-center text-5xl shadow-xl">
-                {emoji}
-              </div>
-            </div>
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 max-w-4xl leading-tight">
+            {service.title}
+          </h1>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 max-w-4xl">
-              {service.title}
-            </h1>
-
-            <p className="text-xl text-white/80 max-w-3xl">
-              {service.shortDescription}
-            </p>
-          </div>
+          {/* Short Description */}
+          <p className="text-xl text-white/80 max-w-3xl">
+            {service.shortDescription}
+          </p>
         </div>
       </section>
 
       {/* Content */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
+
               {/* Share Sidebar */}
-              <div className="lg:col-span-1">
-                <div className="lg:sticky lg:top-24">
+              <div className="lg:col-span-1 order-2 lg:order-1">
+                <div className="lg:sticky lg:top-24 flex justify-center lg:block mb-8 lg:mb-0">
                   <button
                     onClick={handleCopyLink}
                     className="w-10 h-10 rounded-lg bg-white/5 hover:bg-ocean-cyan/20 border border-white/10 hover:border-ocean-cyan/30 flex items-center justify-center text-white/60 hover:text-ocean-cyan transition-all"
@@ -146,10 +133,25 @@ export default function ServiceDetailClient({ service, relatedServices, locale }
               </div>
 
               {/* Main Content */}
-              <div className="lg:col-span-11">
+              <div className="lg:col-span-11 order-1 lg:order-2">
+                {/* Service Image */}
+                {service.image && (
+                  <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-10 rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      priority
+                      quality={75}
+                      sizes="(max-width: 1200px) 100vw, 1200px"
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+
                 {/* Description */}
                 <article className="prose prose-invert prose-lg max-w-none mb-12">
-                  <div 
+                  <div
                     className="service-content text-white/80 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: service.description }}
                   />
@@ -159,8 +161,8 @@ export default function ServiceDetailClient({ service, relatedServices, locale }
                 {service.localizations && service.localizations.length > 0 && (
                   <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
                     <p className="text-white/60 text-sm mb-3">
-                      {locale === 'tr' 
-                        ? 'Bu hizmet başka dillerde de mevcut:' 
+                      {locale === 'tr'
+                        ? 'Bu hizmet başka dillerde de mevcut:'
                         : 'This service is also available in:'}
                     </p>
                     <div className="flex gap-3">
@@ -186,7 +188,7 @@ export default function ServiceDetailClient({ service, relatedServices, locale }
       {relatedServices.length > 0 && (
         <section className="relative py-16">
           <div className="absolute inset-0 bg-gradient-to-b from-mid to-deep" />
-          
+
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
               {locale === 'tr' ? 'Diğer Hizmetler' : 'Other Services'}

@@ -1,17 +1,25 @@
-// lib/api/president.ts
-import { fetchAPI } from '../strapi';
-import { President } from '../types/president';
+// lib/api/president.ts - Custom API version
+import { fetchAPI, getMediaUrl } from "../api";
 
-// Başkan bilgisini getir (Single Type)
-export async function getPresident(locale: 'tr' | 'en' = 'tr'): Promise<President | null> {
+export interface President {
+  id: number;
+  firstName: string;
+  lastName: string;
+  photo: string | null;
+  message: string;
+  messageEn?: string; // English translation
+  phone: string;
+  email: string;
+}
+
+export async function getPresident(): Promise<President | null> {
   try {
-    const response = await fetchAPI<President>(
-      '/president?populate=photo',  // 👈 populate'i query string olarak ekle
-      locale                         // 👈 locale ikinci parametre
-    );
+    const response = await fetchAPI<President>("/president");
     return response.data || null;
   } catch (error) {
-    console.error('Error fetching president:', error);
+    console.error("Error fetching president:", error);
     return null;
   }
 }
+
+export { getMediaUrl };

@@ -10,13 +10,12 @@ interface AnnouncementData {
   slug: string;
   title: string;
   content: string;
+  excerpt?: string;
   priority: string;
-  startDate: string;
-  endDate: string;
+  date: string;
   isActive: boolean;
   localizations?: Array<{
     id: number;
-    documentId: string;
     title: string;
     slug: string;
     locale: string;
@@ -28,7 +27,7 @@ interface RelatedAnnouncement {
   slug: string;
   title: string;
   priority: string;
-  startDate: string;
+  date: string;
 }
 
 interface Props {
@@ -38,33 +37,26 @@ interface Props {
 }
 
 const priorityConfig = {
-  urgent: {
+  high: {
     bg: 'bg-red-500/20',
     border: 'border-red-500/30',
     text: 'text-red-400',
-    label: { tr: 'Acil', en: 'Urgent' },
-    icon: '🚨'
-  },
-  high: {
-    bg: 'bg-orange-500/20',
-    border: 'border-orange-500/30',
-    text: 'text-orange-400',
     label: { tr: 'Yüksek', en: 'High' },
-    icon: '⚠️'
+    icon: '🔴'
   },
   medium: {
     bg: 'bg-yellow-500/20',
     border: 'border-yellow-500/30',
     text: 'text-yellow-400',
     label: { tr: 'Orta', en: 'Medium' },
-    icon: 'ℹ️'
+    icon: '🟡'
   },
   low: {
-    bg: 'bg-blue-500/20',
-    border: 'border-blue-500/30',
-    text: 'text-blue-400',
+    bg: 'bg-green-500/20',
+    border: 'border-green-500/30',
+    text: 'text-green-400',
     label: { tr: 'Düşük', en: 'Low' },
-    icon: '📌'
+    icon: '🟢'
   }
 };
 
@@ -80,7 +72,7 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
 
   return (
     <div className="min-h-screen">
-      {/* Hero - Düzeltilmiş */}
+      {/* Hero */}
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -117,10 +109,10 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
               <span>{config.icon}</span>
               <span>{config.label[locale as 'tr' | 'en']}</span>
             </span>
-            
+
             {!announcement.isActive && (
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-500/20 border border-gray-500/30 text-gray-400 text-sm font-semibold">
-                {locale === 'tr' ? '⏸️ Geçersiz' : '⏸️ Expired'}
+                {locale === 'tr' ? '⏸️ Pasif' : '⏸️ Inactive'}
               </span>
             )}
           </div>
@@ -136,13 +128,7 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span>{locale === 'tr' ? 'Başlangıç:' : 'Start:'} {announcement.startDate}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>{locale === 'tr' ? 'Bitiş:' : 'End:'} {announcement.endDate}</span>
+              <span>{announcement.date}</span>
             </div>
           </div>
         </div>
@@ -151,14 +137,14 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
       {/* Content */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
+
               {/* Share Sidebar */}
-              <div className="lg:col-span-1">
-                <div className="lg:sticky lg:top-24">
+              <div className="lg:col-span-1 order-2 lg:order-1">
+                <div className="lg:sticky lg:top-24 flex justify-center lg:block mb-8 lg:mb-0">
                   <button
                     onClick={handleCopyLink}
                     className="w-10 h-10 rounded-lg bg-white/5 hover:bg-ocean-cyan/20 border border-white/10 hover:border-ocean-cyan/30 flex items-center justify-center text-white/60 hover:text-ocean-cyan transition-all"
@@ -178,9 +164,9 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
               </div>
 
               {/* Main Content */}
-              <div className="lg:col-span-11">
+              <div className="lg:col-span-11 order-1 lg:order-2">
                 <article className={`prose prose-invert prose-lg max-w-none p-8 rounded-2xl backdrop-blur-lg ${config.bg} border ${config.border}`}>
-                  <div 
+                  <div
                     className="announcement-content"
                     dangerouslySetInnerHTML={{ __html: announcement.content }}
                   />
@@ -190,8 +176,8 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
                 {announcement.localizations && announcement.localizations.length > 0 && (
                   <div className="mt-8 p-6 bg-white/5 border border-white/10 rounded-xl">
                     <p className="text-white/60 text-sm mb-3">
-                      {locale === 'tr' 
-                        ? 'Bu duyuru başka dillerde de mevcut:' 
+                      {locale === 'tr'
+                        ? 'Bu duyuru başka dillerde de mevcut:'
                         : 'This announcement is also available in:'}
                     </p>
                     <div className="flex gap-3">
@@ -217,11 +203,11 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
       {relatedAnnouncements.length > 0 && (
         <section className="relative py-16">
           <div className="absolute inset-0 bg-gradient-to-b from-mid to-deep" />
-          
+
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                {locale === 'tr' ? 'İlgili Duyurular' : 'Related Announcements'}
+                {locale === 'tr' ? 'Diğer Duyurular' : 'Other Announcements'}
               </h2>
             </div>
 
@@ -242,7 +228,7 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <time>{item.startDate}</time>
+                        <time>{item.date}</time>
                       </div>
                     </div>
                   </Link>

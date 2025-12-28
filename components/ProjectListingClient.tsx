@@ -21,11 +21,33 @@ interface Props {
   locale: string;
 }
 
-function ProjectCard({ item, locale }: { item: ProjectItem; locale: string }) {
+const categoryTranslations: Record<string, string> = {
+  'Genel': 'General',
+  'Dalış': 'Diving',
+  'Etkinlik': 'Event',
+  'Keşif': 'Discovery',
+  'Eğitim': 'Training',
+  'Duyuru': 'Announcement',
+  'Basın': 'Press',
+  'Proje': 'Project',
+  'Tümü': 'All',
+  'Bilimsel': 'Scientific',
+  'Teknik': 'Technical',
+  'Araştırma': 'Research',
+  'Koruma': 'Conservation',
+  'Sosyal Sorumluluk': 'Social Responsibility'
+};
+
+const getCategoryLabel = (cat: string, locale: string) => {
+  if (locale === 'tr') return cat;
+  return categoryTranslations[cat] || cat;
+};
+
+function ProjectCard({ item, locale, priority = false }: { item: ProjectItem; locale: string; priority?: boolean }) {
   return (
     <article className="group h-full">
       <Link href={`/${locale}/projeler/${item.slug}`} className="block h-full">
-        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
+        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-ocean-cyan/10 hover:border-ocean-cyan/30 hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
           {/* Image */}
           <div className="relative w-full h-64 overflow-hidden bg-ocean-navy/20">
             {item.image ? (
@@ -33,6 +55,9 @@ function ProjectCard({ item, locale }: { item: ProjectItem; locale: string }) {
                 src={item.image}
                 alt={item.title}
                 fill
+                priority={priority}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={80}
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
@@ -45,7 +70,7 @@ function ProjectCard({ item, locale }: { item: ProjectItem; locale: string }) {
             <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep via-transparent to-transparent" />
             <div className="absolute top-4 left-4">
               <span className="px-3 py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-xs font-semibold">
-                {item.category}
+                {getCategoryLabel(item.category, locale)}
               </span>
             </div>
           </div>
@@ -92,9 +117,8 @@ function PaginationButton({ page, isActive, onClick }: { page: number; isActive:
   return (
     <button
       onClick={onClick}
-      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${
-        isActive ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
-      }`}
+      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${isActive ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
+        }`}
     >
       {page}
     </button>
@@ -153,7 +177,7 @@ export default function ProjectListingClient({ projects, locale }: Props) {
               {locale === 'tr' ? 'Projeler' : 'Projects'}
             </h1>
             <p className="text-lg text-white/70 mb-6">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Sualtı araştırmaları, keşifler ve bilimsel çalışmalarımız'
                 : 'Our underwater research, discoveries and scientific studies'
               }
@@ -182,13 +206,12 @@ export default function ProjectListingClient({ projects, locale }: Props) {
                         setActiveCategory(category);
                         setCurrentPage(1);
                       }}
-                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${
-                        activeCategory === category 
-                          ? 'bg-ocean-cyan text-white shadow-lg' 
+                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${activeCategory === category
+                          ? 'bg-ocean-cyan text-white shadow-lg'
                           : 'bg-white/5 text-white/70 hover:bg-white/10'
-                      }`}
+                        }`}
                     >
-                      {category}
+                      {getCategoryLabel(category, locale)}
                     </button>
                   ))}
                 </div>
@@ -221,8 +244,13 @@ export default function ProjectListingClient({ projects, locale }: Props) {
 
           {paginatedProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {paginatedProjects.map((item) => (
-                <ProjectCard key={item.id} item={item} locale={locale} />
+              {paginatedProjects.map((item, index) => (
+                <ProjectCard
+                  key={item.id}
+                  item={item}
+                  locale={locale}
+                  priority={index < 6 && currentPage === 1}
+                />
               ))}
             </div>
           ) : (
@@ -235,9 +263,9 @@ export default function ProjectListingClient({ projects, locale }: Props) {
 
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2">
-              <button 
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
                 className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -246,17 +274,17 @@ export default function ProjectListingClient({ projects, locale }: Props) {
               </button>
 
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <PaginationButton 
-                  key={page} 
-                  page={page} 
-                  isActive={currentPage === page} 
-                  onClick={() => setCurrentPage(page)} 
+                <PaginationButton
+                  key={page}
+                  page={page}
+                  isActive={currentPage === page}
+                  onClick={() => setCurrentPage(page)}
                 />
               ))}
 
-              <button 
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} 
-                disabled={currentPage === totalPages} 
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
                 className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

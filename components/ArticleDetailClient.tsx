@@ -15,9 +15,9 @@ interface ArticleData {
   author: string;
   category: string;
   readTime: string;
+  pdfUrl?: string | null;
   localizations?: Array<{
     id: number;
-    documentId: string;
     title: string;
     slug: string;
     locale: string;
@@ -119,14 +119,14 @@ export default function ArticleDetailClient({ article, relatedArticles, locale }
       {/* Content */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
+
               {/* Share Sidebar */}
-              <div className="lg:col-span-1">
-                <div className="lg:sticky lg:top-24">
+              <div className="lg:col-span-1 order-2 lg:order-1">
+                <div className="lg:sticky lg:top-24 flex justify-center lg:block mb-8 lg:mb-0">
                   <button
                     onClick={handleCopyLink}
                     className="w-10 h-10 rounded-lg bg-white/5 hover:bg-ocean-cyan/20 border border-white/10 hover:border-ocean-cyan/30 flex items-center justify-center text-white/60 hover:text-ocean-cyan transition-all"
@@ -146,9 +146,57 @@ export default function ArticleDetailClient({ article, relatedArticles, locale }
               </div>
 
               {/* Main Content */}
-              <div className="lg:col-span-11">
+              <div className="lg:col-span-11 order-1 lg:order-2">
+                {/* PDF Download Section */}
+                {article.pdfUrl && (
+                  <div className="mb-8 p-6 bg-gradient-to-r from-ocean-cyan/20 to-blue-500/20 border border-ocean-cyan/30 rounded-2xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-xl bg-ocean-cyan/20 border border-ocean-cyan/30 flex items-center justify-center">
+                        <svg className="w-7 h-7 text-ocean-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white font-semibold text-lg">
+                          {locale === 'tr' ? '📄 PDF Doküman Mevcut' : '📄 PDF Document Available'}
+                        </h3>
+                        <p className="text-white/60 text-sm">
+                          {locale === 'tr'
+                            ? 'Bu makaleyi PDF olarak görüntüleyebilir veya indirebilirsiniz.'
+                            : 'You can view or download this article as PDF.'
+                          }
+                        </p>
+                      </div>
+                      <div className="flex gap-3">
+                        <a
+                          href={article.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white font-medium transition-all flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          {locale === 'tr' ? 'Görüntüle' : 'View'}
+                        </a>
+                        <a
+                          href={article.pdfUrl}
+                          download
+                          className="px-4 py-2 bg-ocean-cyan hover:bg-ocean-cyan/80 rounded-lg text-white font-medium transition-all flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          {locale === 'tr' ? 'İndir' : 'Download'}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <article className="prose prose-invert prose-lg max-w-none">
-                  <div 
+                  <div
                     className="article-content"
                     dangerouslySetInnerHTML={{ __html: article.content }}
                   />
@@ -158,8 +206,8 @@ export default function ArticleDetailClient({ article, relatedArticles, locale }
                 {article.localizations && article.localizations.length > 0 && (
                   <div className="mt-8 p-6 bg-white/5 border border-white/10 rounded-xl">
                     <p className="text-white/60 text-sm mb-3">
-                      {locale === 'tr' 
-                        ? 'Bu makale başka dillerde de mevcut:' 
+                      {locale === 'tr'
+                        ? 'Bu makale başka dillerde de mevcut:'
                         : 'This article is also available in:'}
                     </p>
                     <div className="flex gap-3">
@@ -185,7 +233,7 @@ export default function ArticleDetailClient({ article, relatedArticles, locale }
       {relatedArticles.length > 0 && (
         <section className="relative py-16">
           <div className="absolute inset-0 bg-gradient-to-b from-mid to-deep" />
-          
+
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
               {locale === 'tr' ? 'İlgili Makaleler' : 'Related Articles'}

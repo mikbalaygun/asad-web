@@ -1,84 +1,58 @@
-// lib/api/popups.ts
-import { fetchAPI } from '../strapi';
-import { Popup } from '../types/popup';
+// lib/api/popups.ts - Custom API version
+import { fetchAPI, getMediaUrl } from "../api";
 
-/**
- * Aktif pop-upları getir (tarih aralığı ve priority'ye göre)
- */
-export async function getActivePopups(locale: 'tr' | 'en' = 'tr'): Promise<Popup[]> {
+export interface Popup {
+  id: number;
+  title: string;
+  slug: string;
+  image: string | null;
+  mobileImage: string | null;
+  isActive: boolean;
+  priority: number;
+  closeDelay: number;
+  startDate: string | null;
+  endDate: string | null;
+  linkUrl: string | null;
+  linkText: string | null;
+  displayFrequency: string;
+  showOnPages: string[] | null;
+  locale: string;
+}
+
+export async function getActivePopups(locale: "tr" | "en" = "tr"): Promise<Popup[]> {
   try {
-    const now = new Date().toISOString();
-    
-    const response = await fetchAPI<Popup[]>(
-      `/pop-ups?` +
-      `filters[isActive][$eq]=true` +
-      `&filters[startDate][$lte]=${now}` +
-      `&filters[endDate][$gte]=${now}` +
-      `&sort=priority:desc` +
-      `&populate=image` +
-      `&populate=mobileImage`,
-      locale
-    );
-
-    if (!response?.data || !Array.isArray(response.data)) {
-      return [];
-    }
-
-    return response.data;
+    const response = await fetchAPI<Popup[]>("/popups", { locale });
+    const now = new Date();
+    return (response.data || []).filter(p => {
+      if (!p.isActive) return false;
+      if (p.startDate && new Date(p.startDate) > now) return false;
+      if (p.endDate && new Date(p.endDate) < now) return false;
+      return true;
+    });
   } catch (error) {
-    console.error('[getActivePopups] Error fetching popups:', error);
+    console.error("Error fetching popups:", error);
     return [];
   }
 }
 
-/**
- * Belirli bir sayfa için pop-up getir
- */
-export async function getPopupForPage(
-  pagePath: string,
-  locale: 'tr' | 'en' = 'tr'
-): Promise<Popup | null> {
+// Get popup for a specific page
+export async function getPopupForPage(page: string, locale: "tr" | "en" = "tr"): Promise<Popup | null> {
   try {
     const popups = await getActivePopups(locale);
-    
-    if (popups.length === 0) {
-      return null;
-    }
 
-    // showOnPages kontrolü
-    const filteredPopups = popups.filter(popup => {
-      // Eğer showOnPages null veya boş ise, her sayfada göster
-      if (!popup.showOnPages || popup.showOnPages.length === 0) {
-        return true;
-      }
-      
-      // pagePath showOnPages içinde var mı?
-      return popup.showOnPages.some(page => 
-        pagePath === page || pagePath.includes(page)
-      );
+    // Find popup that matches this page or shows on all pages
+    const matchingPopup = popups.find(p => {
+      // If showOnPages is null/empty, show on all pages
+      if (!p.showOnPages || p.showOnPages.length === 0) return true;
+      // Otherwise check if current page is in the list
+      return p.showOnPages.includes(page) || p.showOnPages.includes('*');
     });
 
-    // En yüksek priority'li olanı döndür
-    return filteredPopups[0] || null;
+    return matchingPopup || null;
   } catch (error) {
-    console.error('[getPopupForPage] Error:', error);
+    console.error("Error getting popup for page:", error);
     return null;
   }
 }
 
-/**
- * Tüm pop-upları getir (admin için)
- */
-export async function getAllPopups(locale: 'tr' | 'en' = 'tr'): Promise<Popup[]> {
-  try {
-    const response = await fetchAPI<Popup[]>(
-      `/pop-ups?sort=priority:desc&populate=*`,
-      locale
-    );
-
-    return response?.data || [];
-  } catch (error) {
-    console.error('[getAllPopups] Error:', error);
-    return [];
-  }
-}
+export { getMediaUrl };

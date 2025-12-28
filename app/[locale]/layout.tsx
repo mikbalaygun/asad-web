@@ -9,7 +9,7 @@ import en from '@/messages/en.json';
 import { I18nProvider } from '@/components/i18n';
 
 export const metadata: Metadata = {
-  title: 'ASAD - Anadolu Sualtı Araştırmaları Derneği',
+  title: 'ASAD - Anadolu Su Altı Araştırmaları ve Sporları Derneği',
   description: "Anadolu'nun sualtı zenginliklerini keşfedin",
 };
 
@@ -30,7 +30,7 @@ export default async function RootLayout(
           <Navbar />
           <main className="relative">{children}</main>
           <FooterServer locale={locale} />
-          
+
           {/* Pop-up Sistemi - En sona eklendi */}
           <PopupServer locale={locale} pagePath={`/${locale}`} />
         </I18nProvider>

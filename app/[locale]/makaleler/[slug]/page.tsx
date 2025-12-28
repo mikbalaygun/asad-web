@@ -3,18 +3,17 @@ import { getArticleBySlug, getLatestArticles } from '@/lib/api/articles';
 import { notFound } from 'next/navigation';
 import ArticleDetailClient from '@/components/ArticleDetailClient';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string; locale: 'tr' | 'en' }>;
-}) {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+type Params = Promise<{ slug: string; locale: 'tr' | 'en' }>;
+
+export async function generateMetadata({ params }: { params: Params }) {
   const { slug, locale } = await params;
   const article = await getArticleBySlug(slug, locale);
 
   if (!article) {
-    return {
-      title: 'Makale Bulunamadı | ASAD',
-    };
+    return { title: 'Makale Bulunamadı | ASAD' };
   }
 
   return {
@@ -23,11 +22,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ArticleDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string; locale: 'tr' | 'en' }>;
-}) {
+export default async function ArticleDetailPage({ params }: { params: Params }) {
   const { slug, locale } = await params;
   const article = await getArticleBySlug(slug, locale);
 
@@ -35,33 +30,14 @@ export default async function ArticleDetailPage({
     notFound();
   }
 
-  // İlgili makaleleri getir (aynı kategoriden)
+  // İlgili makaleleri getir
   const allArticles = await getLatestArticles(10, locale);
   const relatedArticles = allArticles
     .filter((item) => item.slug !== slug && item.category === article.category)
     .slice(0, 3);
 
   // İçeriği HTML'e çevir
-  let htmlContent = '';
-  
-  if (typeof article.content === 'string') {
-    const paragraphs = article.content.split('\n\n');
-    htmlContent = paragraphs
-      .map(para => {
-        if (para.trim().startsWith('-')) {
-          const items = para
-            .split('\n')
-            .filter(line => line.trim().startsWith('-'))
-            .map(line => `<li>${line.trim().substring(1).trim()}</li>`)
-            .join('');
-          return `<ul>${items}</ul>`;
-        }
-        return `<p>${para.replace(/\n/g, '<br>')}</p>`;
-      })
-      .join('');
-  } else {
-    htmlContent = convertBlocksToHTML(article.content);
-  }
+  const htmlContent = convertContent(article.content);
 
   const articleData = {
     id: article.id,
@@ -69,17 +45,11 @@ export default async function ArticleDetailPage({
     title: article.title,
     excerpt: article.excerpt,
     content: htmlContent,
-    date: new Date(article.publishedDate).toLocaleDateString(
-      locale === 'tr' ? 'tr-TR' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }
-    ),
+    date: formatDate(article.publishedDate, locale),
     author: article.author,
     category: article.category,
     readTime: calculateReadTime(article.content),
+    pdfUrl: article.pdfUrl || null,
     localizations: article.localizations || [],
   };
 
@@ -87,98 +57,91 @@ export default async function ArticleDetailPage({
     id: item.id,
     slug: item.slug,
     title: item.title,
-    date: new Date(item.publishedDate).toLocaleDateString(
-      locale === 'tr' ? 'tr-TR' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }
-    ),
+    date: formatDate(item.publishedDate, locale),
     category: item.category,
   }));
 
   return (
-    <ArticleDetailClient 
-      article={articleData} 
-      relatedArticles={formattedRelated} 
-      locale={locale} 
+    <ArticleDetailClient
+      article={articleData}
+      relatedArticles={formattedRelated}
+      locale={locale}
     />
   );
 }
 
-// Strapi blocks'u HTML'e çevir
-function convertBlocksToHTML(blocks: any): string {
-  if (!blocks) return '';
-  if (typeof blocks === 'string') return `<p>${blocks}</p>`;
-  if (!Array.isArray(blocks)) return '';
-  if (blocks.length === 0) return '';
+function formatDate(dateStr: string, locale: 'tr' | 'en'): string {
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString(
+      locale === 'tr' ? 'tr-TR' : 'en-US',
+      { year: 'numeric', month: 'long', day: 'numeric' }
+    );
+  } catch {
+    return '';
+  }
+}
 
-  return blocks
+function convertContent(content: unknown): string {
+  if (!content) return '<p>İçerik yükleniyor...</p>';
+  if (typeof content === 'string') return content; // Zaten HTML
+  if (!Array.isArray(content)) return '<p>İçerik formatı geçersiz.</p>';
+
+  return content
     .map((block) => {
+      if (!block?.type) return '';
+
       if (block.type === 'paragraph') {
-        const text = block.children
-          .map((child: any) => {
-            let content = child.text || '';
-            if (child.bold) content = `<strong>${content}</strong>`;
-            if (child.italic) content = `<em>${content}</em>`;
-            if (child.underline) content = `<u>${content}</u>`;
-            if (child.strikethrough) content = `<s>${content}</s>`;
-            if (child.code) content = `<code>${content}</code>`;
-            return content;
+        const text = (block.children || [])
+          .map((child: { text?: string; bold?: boolean; italic?: boolean }) => {
+            let c = child.text || '';
+            if (child.bold) c = `<strong>${c}</strong>`;
+            if (child.italic) c = `<em>${c}</em>`;
+            return c;
           })
           .join('');
-        return `<p>${text}</p>`;
+        return text ? `<p>${text}</p>` : '';
       }
 
       if (block.type === 'heading') {
         const level = block.level || 2;
-        const text = block.children.map((child: any) => child.text || '').join('');
-        return `<h${level}>${text}</h${level}>`;
-      }
-
-      if (block.type === 'quote') {
-        const text = block.children.map((child: any) => child.text || '').join('');
-        return `<blockquote>${text}</blockquote>`;
+        const text = (block.children || []).map((c: { text?: string }) => c?.text || '').join('');
+        return text ? `<h${level}>${text}</h${level}>` : '';
       }
 
       if (block.type === 'list') {
         const tag = block.format === 'ordered' ? 'ol' : 'ul';
-        const items = block.children
-          .map((item: any) => {
-            const text = item.children.map((child: any) => child.text || '').join('');
-            return `<li>${text}</li>`;
+        const items = (block.children || [])
+          .map((item: { children?: Array<{ text?: string }> }) => {
+            const text = (item.children || []).map((c) => c?.text || '').join('');
+            return text ? `<li>${text}</li>` : '';
           })
           .join('');
-        return `<${tag}>${items}</${tag}>`;
+        return items ? `<${tag}>${items}</${tag}>` : '';
       }
 
       return '';
     })
+    .filter(Boolean)
     .join('\n');
 }
 
-// Okuma süresini hesapla
-function calculateReadTime(content: any): string {
+function calculateReadTime(content: unknown): string {
   if (!content) return '3 dk';
-  
+
   let text = '';
   if (typeof content === 'string') {
-    text = content;
+    text = content.replace(/<[^>]*>/g, '');
   } else if (Array.isArray(content)) {
     text = content
-      .map((block) => {
-        if (block.children) {
-          return block.children.map((child: any) => child.text || '').join(' ');
-        }
-        return '';
-      })
+      .map((block) => (block.children || []).map((c: { text?: string }) => c?.text || '').join(' '))
       .join(' ');
   }
 
   const wordsPerMinute = 200;
-  const wordCount = text.split(/\s+/).length;
-  const minutes = Math.ceil(wordCount / wordsPerMinute);
-  
+  const wordCount = (text.trim().match(/\S+/g) || []).length;
+  const minutes = Math.ceil(wordCount / wordsPerMinute) || 1;
+
   return `${minutes} dk`;
 }

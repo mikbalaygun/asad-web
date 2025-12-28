@@ -1,6 +1,5 @@
 // components/PopupServer.tsx
-import { getPopupForPage } from '@/lib/api/popups';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getPopupForPage, getMediaUrl } from '@/lib/api/popups';
 import PopupModal from '@/components/PopupModal';
 
 interface Props {
@@ -22,18 +21,16 @@ export default async function PopupServer({ locale, pagePath }: Props) {
       return null;
     }
 
-    // Format data for client component
+    // Format data for client component - images are direct strings from custom API
     const popupData = {
       id: popup.id,
       title: popup.title,
-      desktopImage: popup.image ? getStrapiMedia(popup.image.url) : '',
-      mobileImage: popup.mobileImage 
-        ? getStrapiMedia(popup.mobileImage.url) 
-        : (popup.image ? getStrapiMedia(popup.image.url) : ''),
-      linkUrl: popup.linkUrl,
-      linkText: popup.linkText,
+      desktopImage: getMediaUrl(popup.image),
+      mobileImage: getMediaUrl(popup.mobileImage) || getMediaUrl(popup.image),
+      linkUrl: popup.linkUrl || undefined,
+      linkText: popup.linkText || undefined,
       closeDelay: popup.closeDelay || 0,
-      displayFrequency: popup.displayFrequency,
+      displayFrequency: (popup.displayFrequency as 'once' | 'daily' | 'session' | 'always') || 'session',
     };
 
     return <PopupModal {...popupData} />;

@@ -1,15 +1,16 @@
-// lib/types/contact.ts
 export interface ContactInfo {
+  id: number;
   phoneNumber: string;
   primaryEmail: string;
-  secondaryEmail: string;
+  secondaryEmail: string | null;
   addressTR: string;
-  instagram?: string;
-  facebook?: string;
-  nextSocial?: string;
-  twitter?: string;
-  youtube?: string;
-  googleMapsUrl?: string;
-  latitude?: string;
-  longitude?: string;
+  addressEN: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  twitter: string | null;
+  youtube: string | null;
+  nextsocial: string | null;
+  googleMapsUrl: string | null;
+  latitude: string | null;
+  longitude: string | null;
 }

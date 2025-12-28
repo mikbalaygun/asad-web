@@ -101,6 +101,7 @@ export default function Navbar() {
     { label: t('nav.aboutPages.representative'), href: `/${locale}/hakkimizda/temsilci` },
     { label: t('nav.aboutPages.gep'), href: `/${locale}/hakkimizda/gep-plani` },
     { label: t('nav.aboutPages.sponsors'), href: `/${locale}/hakkimizda/sponsorlarimiz` },
+    { label: t('nav.aboutPages.importantLinks'), href: `/${locale}/hakkimizda/onemli-linkler` },
   ];
 
   // 2) Galeri dropdown
@@ -127,8 +128,8 @@ export default function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-            ? 'bg-ocean-deep/95 backdrop-blur-xl shadow-lg border-b border-ocean-cyan/20'
-            : 'bg-transparent backdrop-blur-sm'
+          ? 'bg-ocean-deep/95 backdrop-blur-xl shadow-lg border-b border-ocean-cyan/20'
+          : 'bg-transparent backdrop-blur-sm'
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

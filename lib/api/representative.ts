@@ -1,17 +1,21 @@
-// lib/api/representatives.ts
-import { fetchAPI } from '../strapi';
-import { Representative } from '../types/representative';
+// lib/api/representative.ts - Custom API version
+import { fetchAPI, getMediaUrl } from "../api";
 
-// Temsilci bilgisini getir (Single Type)
+export interface Representative {
+  id: number;
+  firstName: string;
+  lastName: string;
+  photo: string | null;
+}
+
 export async function getRepresentative(): Promise<Representative | null> {
   try {
-    const response = await fetchAPI<Representative>(
-      '/representative?populate=photo',
-      'tr'
-    );
+    const response = await fetchAPI<Representative>("/representative");
     return response.data || null;
   } catch (error) {
-    console.error('Error fetching representative:', error);
+    console.error("Error fetching representative:", error);
     return null;
   }
 }
+
+export { getMediaUrl };

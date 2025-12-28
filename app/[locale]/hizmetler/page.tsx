@@ -1,6 +1,6 @@
 // app/[locale]/hizmetler/page.tsx
 import { getAllServices } from '@/lib/api/services';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getMediaUrl } from '@/lib/api';
 import ServicesListClient from '@/components/ServicesListClient';
 
 export const metadata = {
@@ -16,14 +16,14 @@ export default async function ServicesPage({
   const { locale } = await params;
   const servicesData = await getAllServices(locale);
 
-  // Strapi verisini component'e uygun formata çevir
+  // Custom API verisini component'e uygun formata çevir
   const formattedServices = servicesData.map((item) => ({
     id: item.id,
     slug: item.slug,
     title: item.title,
     shortDescription: item.shortDescription,
     icon: item.icon || 'diving',
-    image: item.coverImage ? getStrapiMedia(item.coverImage.url) : undefined,
+    image: getMediaUrl(item.coverImage),
   }));
 
   return <ServicesListClient services={formattedServices} locale={locale} />;

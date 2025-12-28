@@ -29,13 +29,13 @@ const iconMap: Record<string, string> = {
   safety: '🛡️',
 };
 
-function ServiceCard({ item, locale }: { item: ServiceItem; locale: string }) {
+function ServiceCard({ item, locale, priority = false }: { item: ServiceItem; locale: string; priority?: boolean }) {
   const emoji = iconMap[item.icon] || '🌊';
 
   return (
     <article className="group h-full">
       <Link href={`/${locale}/hizmetler/${item.slug}`} className="block h-full">
-        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
+        <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-ocean-cyan/10 hover:border-ocean-cyan/30 hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
           {/* Image */}
           <div className="relative w-full h-64 overflow-hidden bg-ocean-navy/20">
             {item.image ? (
@@ -43,6 +43,9 @@ function ServiceCard({ item, locale }: { item: ServiceItem; locale: string }) {
                 src={item.image}
                 alt={item.title}
                 fill
+                priority={priority}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={80}
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
@@ -51,7 +54,7 @@ function ServiceCard({ item, locale }: { item: ServiceItem; locale: string }) {
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep via-transparent to-transparent" />
-            
+
             {/* Icon Badge */}
             <div className="absolute top-4 left-4">
               <div className="w-14 h-14 rounded-xl bg-ocean-cyan/90 backdrop-blur-sm flex items-center justify-center text-3xl shadow-lg">
@@ -115,7 +118,7 @@ export default function ServicesListClient({ services, locale }: Props) {
               {locale === 'tr' ? 'Hizmetlerimiz' : 'Our Services'}
             </h1>
             <p className="text-lg text-white/70 mb-6">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Sualtı sporları ve deniz bilimleri alanında sunduğumuz profesyonel hizmetler'
                 : 'Professional services we offer in underwater sports and marine sciences'
               }
@@ -127,12 +130,17 @@ export default function ServicesListClient({ services, locale }: Props) {
       {/* Services Grid */}
       <section className="relative py-12">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           {services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((item) => (
-                <ServiceCard key={item.id} item={item} locale={locale} />
+              {services.map((item, index) => (
+                <ServiceCard
+                  key={item.id}
+                  item={item}
+                  locale={locale}
+                  priority={index < 6}
+                />
               ))}
             </div>
           ) : (

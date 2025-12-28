@@ -1,7 +1,5 @@
 // app/[locale]/hakkimizda/yonetim-kurulu/page.tsx
-import { getAllBoardMembers } from '@/lib/api/board-members';
-import { BoardMember } from '@/lib/types/board-member';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getAllBoardMembers, getMediaUrl } from '@/lib/api/board-members';
 import BoardMembersClient from '@/components/BoardMembersClient';
 
 export const metadata = {
@@ -10,11 +8,12 @@ export const metadata = {
 };
 
 export default async function BoardMembersPage({
-  params: { locale },
+  params,
 }: {
-  params: { locale: 'tr' | 'en' };
+  params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
-  let membersData: BoardMember[] = [];
+  const { locale } = await params;
+  let membersData = [];
   try {
     membersData = await getAllBoardMembers();
   } catch (error) {
@@ -26,7 +25,7 @@ export default async function BoardMembersPage({
     firstName: m.firstName,
     lastName: m.lastName,
     role: m.role,
-    photo: m.photo ? getStrapiMedia(m.photo.url) : undefined,
+    photo: getMediaUrl(m.photo),
   }));
 
   return <BoardMembersClient members={formattedMembers} locale={locale} />;

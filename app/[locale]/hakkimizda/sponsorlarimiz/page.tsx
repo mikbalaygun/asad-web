@@ -1,6 +1,5 @@
 // app/[locale]/hakkimizda/sponsorlarimiz/page.tsx
-import { getAllSponsors } from '@/lib/api/sponsors';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getAllSponsors, getMediaUrl } from '@/lib/api/sponsors';
 import SponsorsPageClient from '@/components/SponsorsPageClient';
 
 export const metadata = {
@@ -20,7 +19,7 @@ export default async function SponsorsPage({
   const sponsors = sponsorsData.map((sponsor) => ({
     id: sponsor.id,
     name: sponsor.name,
-    logo: sponsor.logo ? getStrapiMedia(sponsor.logo.url) : null,
+    logo: getMediaUrl(sponsor.logo),
   }));
 
   return <SponsorsPageClient sponsors={sponsors} locale={locale} />;

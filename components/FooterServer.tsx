@@ -12,13 +12,14 @@ export default async function FooterServer({ locale }: Props) {
     const contactInfo = await getContactInfo();
 
     return (
-      <Footer 
-        locale={locale} 
+      <Footer
+        locale={locale}
         contactInfo={contactInfo ? {
-          instagram: contactInfo.instagram,
-          facebook: contactInfo.facebook,
-          twitter: contactInfo.twitter,
-          youtube: contactInfo.youtube,
+          instagram: contactInfo.instagram || undefined,
+          facebook: contactInfo.facebook || undefined,
+          twitter: contactInfo.twitter || undefined,
+          youtube: contactInfo.youtube || undefined,
+          nextsocial: contactInfo.nextsocial || undefined,
         } : null}
       />
     );

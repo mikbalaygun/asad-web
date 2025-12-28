@@ -3,64 +3,62 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { VideoGalleryItem } from '@/lib/types/gallery';
-import { getStrapiMedia } from '@/lib/strapi';
-import { getYouTubeThumbnail, getYouTubeEmbedUrl } from '@/lib/api/gallery';
+import type { VideoItem } from '@/lib/api/gallery';
+import { getYouTubeThumbnail, getYouTubeEmbedUrl, getMediaUrl } from '@/lib/api/gallery';
 
 interface VideoGalleryProps {
-  videos: VideoGalleryItem[];
+  videos: VideoItem[];
   locale: string;
 }
 
-function VideoCard({ video, onClick, index }: { video: VideoGalleryItem; onClick: () => void; index: number }) {
-  // Thumbnail: Strapi'den varsa onu kullan, yoksa YouTube'dan al
-  const thumbnailUrl = video.thumbnail 
-    ? getStrapiMedia(video.thumbnail.url)
+function VideoCard({ video, onClick, index, priority = false }: { video: VideoItem; onClick: () => void; index: number; priority?: boolean }) {
+  // Thumbnail: custom API'den varsa onu kullan, yoksa YouTube'dan al
+  const thumbnailUrl = video.thumbnail
+    ? getMediaUrl(video.thumbnail)
     : getYouTubeThumbnail(video.youtubeLink);
 
   return (
     <div
       onClick={onClick}
-      className="group relative cursor-pointer overflow-hidden rounded-2xl bg-ocean-navy/20 backdrop-blur-lg border border-white/10 hover:border-ocean-cyan/30 transition-all duration-300 opacity-0 animate-fadeIn"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl bg-ocean-navy/20 backdrop-blur-lg border border-white/10 hover:border-ocean-cyan/30 hover:shadow-2xl hover:shadow-ocean-cyan/10 hover:-translate-y-1 transition-all duration-300 opacity-0 animate-fadeIn h-full flex flex-col"
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="relative aspect-video">
+      <div className="relative aspect-video flex-shrink-0">
         <Image
-          src={thumbnailUrl}
+          src={thumbnailUrl || '/placeholder.jpg'}
           alt={video.title}
           fill
+          priority={priority}
           className="object-cover transition-transform duration-500 group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
         {/* Play Button */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-20 h-20 rounded-full bg-ocean-cyan/90 backdrop-blur-sm flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-            <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-ocean-cyan/90 backdrop-blur-sm flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+            <svg className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
           </div>
         </div>
 
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-xs font-semibold">
+        <div className="absolute top-3 left-3 md:top-4 md:left-4">
+          <span className="px-2 py-1 md:px-3 md:py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-sm text-white text-xs font-semibold">
             {video.category}
           </span>
         </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-white text-lg font-bold mb-2 line-clamp-2 group-hover:text-ocean-cyan transition-colors">
+      <div className="p-4 md:p-6 flex-1 flex flex-col">
+        <h3 className="text-white text-base md:text-lg font-bold mb-2 line-clamp-2 group-hover:text-ocean-cyan transition-colors">
           {video.title}
         </h3>
-        {video.description && (
-          <p className="text-white/60 text-sm mb-4 line-clamp-2">
-            {video.description}
-          </p>
-        )}
-        <div className="flex items-center justify-between text-white/50 text-sm">
+        <p className="text-white/60 text-sm mb-4 line-clamp-2 flex-1">
+          {video.description || '\u00A0'}
+        </p>
+        <div className="flex items-center text-white/50 text-sm mt-auto">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -74,15 +72,15 @@ function VideoCard({ video, onClick, index }: { video: VideoGalleryItem; onClick
 }
 
 // YouTube Video Modal
-function VideoModal({ video, onClose }: { video: VideoGalleryItem | null; onClose: () => void }) {
+function VideoModal({ video, onClose }: { video: VideoItem | null; onClose: () => void }) {
   if (!video) return null;
 
   const embedUrl = getYouTubeEmbedUrl(video.youtubeLink);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <button 
-        onClick={onClose} 
+      <button
+        onClick={onClose}
         className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
         aria-label="Close"
       >
@@ -102,7 +100,7 @@ function VideoModal({ video, onClose }: { video: VideoGalleryItem | null; onClos
             className="w-full h-full"
           />
         </div>
-        
+
         {/* Video Info */}
         <div className="mt-6 backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6">
           <div className="flex items-start justify-between mb-4">
@@ -113,7 +111,7 @@ function VideoModal({ video, onClose }: { video: VideoGalleryItem | null; onClos
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-6 text-white/60 text-sm">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +131,7 @@ function VideoModal({ video, onClose }: { video: VideoGalleryItem | null; onClos
 
 export default function VideoGalleryClient({ videos, locale }: VideoGalleryProps) {
   const [activeCategory, setActiveCategory] = useState('Tümü');
-  const [selectedVideo, setSelectedVideo] = useState<VideoGalleryItem | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   const content = {
     tr: {
@@ -247,11 +245,10 @@ export default function VideoGalleryClient({ videos, locale }: VideoGalleryProps
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${
-                    activeCategory === category
-                      ? 'bg-ocean-cyan/80 text-white shadow-lg'
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
-                  }`}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${activeCategory === category
+                    ? 'bg-ocean-cyan/80 text-white shadow-lg'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
+                    }`}
                 >
                   {translatedCategory}
                 </button>
@@ -264,7 +261,7 @@ export default function VideoGalleryClient({ videos, locale }: VideoGalleryProps
       {/* Video Grid */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-white/60">
             {filteredVideos.length} {t.found}
@@ -278,6 +275,7 @@ export default function VideoGalleryClient({ videos, locale }: VideoGalleryProps
                   video={video}
                   onClick={() => setSelectedVideo(video)}
                   index={index}
+                  priority={index < 6}
                 />
               ))}
             </div>
@@ -298,7 +296,7 @@ export default function VideoGalleryClient({ videos, locale }: VideoGalleryProps
           onClose={() => setSelectedVideo(null)}
         />
       )}
-      
+
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; }

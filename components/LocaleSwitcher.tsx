@@ -8,10 +8,19 @@ function detectLocaleFromPath(path: string): 'tr' | 'en' {
   return 'tr'; // default
 }
 
+// Check if current path is a detail page (has more than 2 segments like /tr/haberler/slug)
+function isDetailPage(path: string): boolean {
+  // Gallery pages are exceptions, they should show locale switcher
+  if (path.includes('/galeri/')) return false;
+
+  const segments = path.split('/').filter(Boolean);
+  // More than 2 segments means it's a detail page (e.g., /tr/haberler/my-slug)
+  return segments.length > 2;
+}
+
 function buildToggledHref(
   path: string,
-  search: string | null,
-  hash: string | null
+  search: string | null
 ): { href: string; nextLocale: 'tr' | 'en' } {
   const current = detectLocaleFromPath(path);
   const target: 'tr' | 'en' = current === 'tr' ? 'en' : 'tr';
@@ -22,7 +31,6 @@ function buildToggledHref(
   else next = `/${target}${path.startsWith('/') ? '' : '/'}${path}`; // safety
 
   if (search && search.length > 0) next += `?${search}`;
-  if (hash && hash.length > 0) next += `#${hash}`;
 
   return { href: next, nextLocale: target };
 }
@@ -31,10 +39,13 @@ export default function LocaleSwitcher() {
   const pathname = usePathname() || '/tr';
   const searchParams = useSearchParams();
   const search = searchParams?.toString() ?? null;
-  // hash Next.js'te doğrudan yok; istersen window.location.hash okuyabilirsin:
-  const hash = typeof window !== 'undefined' ? window.location.hash.slice(1) : null;
 
-  const { href, nextLocale } = buildToggledHref(pathname, search, hash);
+  // Hide on detail pages to prevent 404 errors
+  if (isDetailPage(pathname)) {
+    return null;
+  }
+
+  const { href, nextLocale } = buildToggledHref(pathname, search);
 
   return (
     <Link

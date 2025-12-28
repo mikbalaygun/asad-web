@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTH ====================
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ==================== NEWS ====================
+model News {
+  id            Int       @id @default(autoincrement())
+  title         String
+  slug          String    
+  excerpt       String
+  content       Json      // HTML string or blocks array
+  category      String
+  coverImage    String?   // Image path
+  publishedTime DateTime
+  isActive      Boolean   @default(true)
+  locale        String    @default("tr")
+  parentId      Int?      // For localizations
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  parent        News?     @relation("NewsLocalizations", fields: [parentId], references: [id])
+  localizations News[]    @relation("NewsLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== ARTICLES ====================
+model Article {
+  id            Int       @id @default(autoincrement())
+  title         String
+  slug          String
+  excerpt       String
+  content       Json      
+  author        String
+  category      String
+  pdfUrl        String?   // PDF dosyası URL'i
+  publishedDate DateTime
+  isActive      Boolean   @default(true)
+  locale        String    @default("tr")
+  parentId      Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  parent        Article?  @relation("ArticleLocalizations", fields: [parentId], references: [id])
+  localizations Article[] @relation("ArticleLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== PROJECTS ====================
+model Project {
+  id            Int       @id @default(autoincrement())
+  title         String
+  slug          String
+  excerpt       String
+  content       Json
+  category      String
+  coverImage    String?
+  publishedTime DateTime
+  isActive      Boolean   @default(true)
+  locale        String    @default("tr")
+  parentId      Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  parent        Project?  @relation("ProjectLocalizations", fields: [parentId], references: [id])
+  localizations Project[] @relation("ProjectLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== SERVICES ====================
+model Service {
+  id               Int      @id @default(autoincrement())
+  title            String
+  slug             String
+  shortDescription String
+  description      Json
+  icon             String   @default("🌊") // Fallback when no coverImage
+  coverImage       String?
+  order            Int      @default(0)
+  isActive         Boolean  @default(true)
+  locale           String   @default("tr")
+  parentId         Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  parent        Service?  @relation("ServiceLocalizations", fields: [parentId], references: [id])
+  localizations Service[] @relation("ServiceLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== NOTICES ====================
+model Notice {
+  id            Int      @id @default(autoincrement())
+  title         String
+  slug          String
+  excerpt       String   @default("")
+  content       Json
+  priority      String   @default("medium") // low, medium, high
+  publishedDate DateTime @default(now())
+  isActive      Boolean  @default(true)
+  locale        String   @default("tr")
+  parentId      Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  parent        Notice?  @relation("NoticeLocalizations", fields: [parentId], references: [id])
+  localizations Notice[] @relation("NoticeLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== POPUPS ====================
+model Popup {
+  id               Int      @id @default(autoincrement())
+  title            String
+  slug             String
+  image            String
+  mobileImage      String?
+  isActive         Boolean  @default(true)
+  priority         Int      @default(0)
+  startDate        DateTime
+  endDate          DateTime
+  linkUrl          String?
+  linkText         String?
+  displayFrequency String   @default("always") // once, daily, session, always
+  closeDelay       Int      @default(0)
+  showOnPages      Json?    // String array
+  locale           String   @default("tr")
+  parentId         Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  parent        Popup?  @relation("PopupLocalizations", fields: [parentId], references: [id])
+  localizations Popup[] @relation("PopupLocalizations")
+
+  @@unique([slug, locale])
+}
+
+// ==================== BOARD MEMBERS ====================
+model BoardMember {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  role      String
+  photo     String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== AUDIT BOARD MEMBERS ====================
+model AuditBoardMember {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  role      String
+  photo     String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== PHOTO GALLERY ====================
+model PhotoGallery {
+  id            Int      @id @default(autoincrement())
+  title         String
+  category      String
+  image         String
+  alternativeText String?
+  publishedDate DateTime
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
+  locale        String   @default("tr")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ==================== VIDEO GALLERY ====================
+model VideoGallery {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  category      String
+  youtubeLink   String
+  thumbnail     String?
+  publishedDate DateTime
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
+  locale        String   @default("tr")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ==================== SPONSORS ====================
+model Sponsor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  logo      String?
+  isActive  Boolean  @default(true)
+  locale    String   @default("tr")
+  parentId  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent        Sponsor?  @relation("SponsorLocalizations", fields: [parentId], references: [id])
+  localizations Sponsor[] @relation("SponsorLocalizations")
+}
+
+// ==================== SINGLE TYPES ====================
+
+// President
+model President {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  photo     String?
+  message   Json     // Rich text (Turkish)
+  messageEn Json?    // Rich text (English)
+  phone     String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Representative
+model Representative {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  photo     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contact Info
+model ContactInfo {
+  id             Int      @id @default(autoincrement())
+  phoneNumber    String
+  primaryEmail   String
+  secondaryEmail String?
+  addressTR      String
+  addressEN      String?
+  instagram      String?
+  facebook       String?
+  twitter        String?
+  youtube        String?
+  nextsocial     String?
+  googleMapsUrl  String?
+  latitude       String?
+  longitude      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

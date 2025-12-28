@@ -1,7 +1,5 @@
-// app/[locale]/hakkimizda/denetim-kurulu/page.tsx
-import { getAllAuditBoardMembers } from '@/lib/api/audit-boards'; // dosya adın tekilse
-import { AuditBoardMember } from '@/lib/types/audit-board';
-import { getStrapiMedia } from '@/lib/strapi';
+// app/[locale]/hakkimizda/denetleme-kurulu/page.tsx
+import { getAllAuditBoardMembers, getMediaUrl } from '@/lib/api/audit-boards';
 import BoardMembersClient from '@/components/BoardMembersClient';
 
 export const metadata = {
@@ -10,11 +8,12 @@ export const metadata = {
 };
 
 export default async function DenetimKuruluPage({
-  params: { locale },
+  params,
 }: {
-  params: { locale: 'tr' | 'en' };
+  params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
-  let membersData: AuditBoardMember[] = [];
+  const { locale } = await params;
+  let membersData = [];
   try {
     membersData = await getAllAuditBoardMembers();
   } catch (error) {
@@ -26,14 +25,11 @@ export default async function DenetimKuruluPage({
     firstName: m.firstName,
     lastName: m.lastName,
     role: m.role,
-    photo: m.photo ? getStrapiMedia(m.photo.url) : undefined,
+    photo: getMediaUrl(m.photo),
   }));
 
   const title = locale === 'tr' ? 'Denetim Kurulu' : 'Audit Board';
-  const subtitle =
-    locale === 'tr'
-      ? 'ASAD denetim kurulu üyeleri'
-      : 'ASAD audit board members';
+  const subtitle = locale === 'tr' ? 'ASAD denetim kurulu üyeleri' : 'ASAD audit board members';
 
   return (
     <BoardMembersClient

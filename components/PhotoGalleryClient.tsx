@@ -3,37 +3,37 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { PhotoGalleryImage } from '@/lib/types/gallery';
-import { getStrapiMedia } from '@/lib/strapi';
+import type { PhotoItem } from '@/lib/api/gallery';
 
 interface PhotoGalleryProps {
-  photos: PhotoGalleryImage[];
+  photos: PhotoItem[];
   locale: string;
 }
 
-function PhotoCard({ photo, onClick, index }: { photo: PhotoGalleryImage; onClick: () => void; index: number }) {
+function PhotoCard({ photo, onClick, index }: { photo: PhotoItem; onClick: () => void; index: number }) {
   return (
     <div
       onClick={onClick}
       className="group relative cursor-pointer overflow-hidden rounded-2xl bg-ocean-navy/20 opacity-0 animate-fadeIn"
-      style={{ 
-        breakInside: 'avoid', 
+      style={{
+        breakInside: 'avoid',
         marginBottom: '1rem',
         animationDelay: `${index * 50}ms`
       }}
     >
-      <div className="relative aspect-[4/3]">
+      {/* aspect-[4/3] on desktop, aspect-[16/10] on mobile for larger images */}
+      <div className="relative aspect-[16/10] sm:aspect-[4/3]">
         <Image
-          src={getStrapiMedia(photo.image.url)}
-          alt={photo.title}
+          src={photo.image}
+          alt={photo.alternativeText || photo.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        {/* Info Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+
+        {/* Info Overlay - Always visible on mobile, hover on desktop */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-300">
           <h3 className="text-white font-semibold mb-1">{photo.title}</h3>
           <div className="flex items-center gap-3 text-white/70 text-sm">
             <span className="px-2 py-1 rounded bg-ocean-cyan/80 text-xs">{photo.category}</span>
@@ -53,8 +53,8 @@ function PhotoCard({ photo, onClick, index }: { photo: PhotoGalleryImage; onClic
 }
 
 // Lightbox Component
-function Lightbox({ photo, onClose, onNext, onPrev }: { 
-  photo: PhotoGalleryImage | null; 
+function Lightbox({ photo, onClose, onNext, onPrev }: {
+  photo: PhotoItem | null;
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
@@ -62,9 +62,10 @@ function Lightbox({ photo, onClose, onNext, onPrev }: {
   if (!photo) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <button 
-        onClick={onClose} 
+    <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center" onClick={onClose}>
+      {/* Close Button */}
+      <button
+        onClick={onClose}
         className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
         aria-label="Close"
       >
@@ -73,9 +74,10 @@ function Lightbox({ photo, onClose, onNext, onPrev }: {
         </svg>
       </button>
 
-      <button 
-        onClick={(e) => { e.stopPropagation(); onPrev(); }} 
-        className="absolute left-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+      {/* Prev Button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onPrev(); }}
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
         aria-label="Previous"
       >
         <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,29 +85,30 @@ function Lightbox({ photo, onClose, onNext, onPrev }: {
         </svg>
       </button>
 
-      <div className="relative max-w-6xl max-h-[80vh] w-full" onClick={(e) => e.stopPropagation()}>
-        <div className="relative aspect-video">
-          <Image 
-            src={getStrapiMedia(photo.image.url)} 
-            alt={photo.title} 
-            fill 
-            className="object-contain" 
-            sizes="90vw"
+      {/* Image Container */}
+      <div className="flex flex-col items-center max-w-5xl max-h-[90vh] mx-16" onClick={(e) => e.stopPropagation()}>
+        <div className="relative w-full" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+          <img
+            src={photo.image}
+            alt={photo.alternativeText || photo.title}
+            className="max-w-full max-h-[calc(90vh-100px)] object-contain mx-auto rounded-lg"
           />
         </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent rounded-b-2xl">
+
+        {/* Info Below Image */}
+        <div className="w-full mt-4 px-4 text-center">
           <h3 className="text-white text-xl font-bold mb-2">{photo.title}</h3>
-          <div className="flex items-center gap-3 text-white/70">
+          <div className="flex items-center justify-center gap-3 text-white/70">
             <span className="px-3 py-1 rounded bg-ocean-cyan/80 text-white text-sm">{photo.category}</span>
             <span>{new Date(photo.publishedDate).toLocaleDateString('tr-TR')}</span>
           </div>
         </div>
       </div>
 
-      <button 
-        onClick={(e) => { e.stopPropagation(); onNext(); }} 
-        className="absolute right-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+      {/* Next Button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onNext(); }}
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
         aria-label="Next"
       >
         <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,7 +121,7 @@ function Lightbox({ photo, onClose, onNext, onPrev }: {
 
 export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps) {
   const [activeCategory, setActiveCategory] = useState('Tümü');
-  const [selectedPhoto, setSelectedPhoto] = useState<PhotoGalleryImage | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<PhotoItem | null>(null);
 
   const content = {
     tr: {
@@ -128,17 +131,8 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
       subtitle: 'Sualtı dünyasından en etkileyici anlar',
       photos: 'Fotoğraflar',
       videos: 'Videolar',
-      photosTab: 'Fotoğraflar',
-      videosTab: 'Videolar',
       found: 'fotoğraf bulundu',
-      categories: {
-        all: 'Tümü',
-        dives: 'Dalışlar',
-        discoveries: 'Keşifler',
-        events: 'Etkinlikler',
-        training: 'Eğitimler',
-        environment: 'Çevre'
-      }
+      noPhotos: 'Fotoğraf bulunamadı.'
     },
     en: {
       breadcrumb: 'Home',
@@ -147,33 +141,15 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
       subtitle: 'The most impressive moments from the underwater world',
       photos: 'Photos',
       videos: 'Videos',
-      photosTab: 'Photos',
-      videosTab: 'Videos',
       found: 'photos found',
-      categories: {
-        all: 'All',
-        dives: 'Dives',
-        discoveries: 'Discoveries',
-        events: 'Events',
-        training: 'Training',
-        environment: 'Environment'
-      }
+      noPhotos: 'No photos found.'
     }
   };
 
   const t = content[locale as keyof typeof content] || content.tr;
 
-  // Kategori mapping (Strapi'deki Türkçe kategori isimleriyle eşleştir)
-  const categoryMap: Record<string, string> = {
-    'Tümü': 'all',
-    'Dalışlar': 'dives',
-    'Keşifler': 'discoveries',
-    'Etkinlikler': 'events',
-    'Eğitimler': 'training',
-    'Çevre': 'environment'
-  };
-
-  const categories = ['Tümü', 'Dalışlar', 'Keşifler', 'Etkinlikler', 'Eğitimler', 'Çevre'];
+  // Get unique categories from photos
+  const categories = ['Tümü', ...Array.from(new Set(photos.map(p => p.category).filter(Boolean)))];
 
   const filteredPhotos = photos.filter(
     p => activeCategory === 'Tümü' || p.category === activeCategory
@@ -227,12 +203,12 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
             <div className="inline-flex backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-1">
               <Link href={`/${locale}/galeri/foto`}>
                 <button className="px-8 py-3 rounded-xl font-medium transition-all bg-ocean-cyan text-white shadow-lg">
-                  {t.photosTab}
+                  {t.photos}
                 </button>
               </Link>
               <Link href={`/${locale}/galeri/video`}>
                 <button className="px-8 py-3 rounded-xl font-medium transition-all text-white/70 hover:text-white">
-                  {t.videosTab}
+                  {t.videos}
                 </button>
               </Link>
             </div>
@@ -240,22 +216,18 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
 
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2 opacity-0 animate-slideUp" style={{ animationDelay: '300ms' }}>
-            {categories.map((category) => {
-              const translatedCategory = t.categories[categoryMap[category] as keyof typeof t.categories] || category;
-              return (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${
-                    activeCategory === category
-                      ? 'bg-ocean-cyan/80 text-white shadow-lg'
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 ${activeCategory === category
+                  ? 'bg-ocean-cyan/80 text-white shadow-lg'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
                   }`}
-                >
-                  {translatedCategory}
-                </button>
-              );
-            })}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -263,14 +235,14 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
       {/* Photo Grid */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-white/60">
             {filteredPhotos.length} {t.found}
           </div>
 
           {filteredPhotos.length > 0 ? (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {filteredPhotos.map((photo, index) => (
                 <PhotoCard
                   key={photo.id}
@@ -282,9 +254,7 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-white/60 text-lg">
-                {locale === 'tr' ? 'Fotoğraf bulunamadı.' : 'No photos found.'}
-              </p>
+              <p className="text-white/60 text-lg">{t.noPhotos}</p>
             </div>
           )}
         </div>
@@ -299,7 +269,7 @@ export default function PhotoGalleryClient({ photos, locale }: PhotoGalleryProps
           onPrev={handlePrev}
         />
       )}
-      
+
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; }

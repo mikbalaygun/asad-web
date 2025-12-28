@@ -21,12 +21,29 @@ interface Props {
   locale: string;
 }
 
-function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
+const categoryTranslations: Record<string, string> = {
+  'Genel': 'General',
+  'Dalış': 'Diving',
+  'Etkinlik': 'Event',
+  'Keşif': 'Discovery',
+  'Eğitim': 'Training',
+  'Duyuru': 'Announcement',
+  'Basın': 'Press',
+  'Proje': 'Project',
+  'Tümü': 'All'
+};
+
+const getCategoryLabel = (cat: string, locale: string) => {
+  if (locale === 'tr') return cat;
+  return categoryTranslations[cat] || cat;
+};
+
+function NewsCard({ item, locale, priority = false }: { item: NewsItem; locale: string; priority?: boolean }) {
   return (
     <article className="group h-full flex flex-col">
       <Link href={`/${locale}/haberler/${item.slug}`} className="block h-full w-full">
         <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-ocean-cyan/20 hover:border-ocean-cyan/30 transition-all duration-300 h-full flex flex-col">
-          
+
           {/* GÖRSEL ALANI: Aspect-Video (16:9) kullanılarak kesilmeler önlendi */}
           <div className="relative w-full aspect-video overflow-hidden bg-ocean-navy/20">
             {item.image ? (
@@ -34,10 +51,11 @@ function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
                 src={item.image}
                 alt={item.title}
                 fill
+                priority={priority}
                 /* Sizes: Tarayıcıya doğru boyutu indirterek netlik sağlar */
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                /* Quality: Listeleme için %90 kalite idealdir */
-                quality={90}
+                /* Quality: Listeleme için %80 kalite yeterlidir ve performansı artırır */
+                quality={80}
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
             ) : (
@@ -47,13 +65,13 @@ function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
                 </svg>
               </div>
             )}
-            
+
             {/* Overlay: Sadece alt kısımda okunabilirlik için hafif karartma */}
             <div className="absolute inset-0 bg-gradient-to-t from-ocean-deep/90 via-transparent to-transparent opacity-80" />
-            
+
             <div className="absolute top-4 left-4 z-10">
               <span className="px-3 py-1 rounded-full bg-ocean-cyan/90 backdrop-blur-md text-white text-xs font-bold shadow-lg tracking-wide">
-                {item.category}
+                {getCategoryLabel(item.category, locale)}
               </span>
             </div>
           </div>
@@ -100,9 +118,8 @@ function PaginationButton({ page, isActive, onClick }: { page: number; isActive:
   return (
     <button
       onClick={onClick}
-      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${
-        isActive ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
-      }`}
+      className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${isActive ? 'bg-ocean-cyan text-white shadow-lg' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
+        }`}
     >
       {page}
     </button>
@@ -161,7 +178,7 @@ export default function NewsListingClient({ news, locale }: Props) {
               {locale === 'tr' ? 'Haberler' : 'News'}
             </h1>
             <p className="text-lg text-white/70 mb-6">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Sualtı dünyasından en son gelişmeler, keşifler ve etkinlikler'
                 : 'Latest developments, discoveries and events from underwater world'
               }
@@ -190,13 +207,12 @@ export default function NewsListingClient({ news, locale }: Props) {
                         setActiveCategory(category);
                         setCurrentPage(1);
                       }}
-                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${
-                        activeCategory === category 
-                          ? 'bg-ocean-cyan text-white shadow-lg' 
-                          : 'bg-white/5 text-white/70 hover:bg-white/10'
-                      }`}
+                      className={`px-3 py-2 rounded-lg font-medium text-xs transition-all hover:scale-105 ${activeCategory === category
+                        ? 'bg-ocean-cyan text-white shadow-lg'
+                        : 'bg-white/5 text-white/70 hover:bg-white/10'
+                        }`}
                     >
-                      {category}
+                      {getCategoryLabel(category, locale)}
                     </button>
                   ))}
                 </div>
@@ -229,8 +245,13 @@ export default function NewsListingClient({ news, locale }: Props) {
 
           {paginatedNews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {paginatedNews.map((item) => (
-                <NewsCard key={item.id} item={item} locale={locale} />
+              {paginatedNews.map((item, index) => (
+                <NewsCard
+                  key={item.id}
+                  item={item}
+                  locale={locale}
+                  priority={index < 4 && currentPage === 1}
+                />
               ))}
             </div>
           ) : (
@@ -243,9 +264,9 @@ export default function NewsListingClient({ news, locale }: Props) {
 
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2">
-              <button 
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
                 className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -254,17 +275,17 @@ export default function NewsListingClient({ news, locale }: Props) {
               </button>
 
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <PaginationButton 
-                  key={page} 
-                  page={page} 
-                  isActive={currentPage === page} 
-                  onClick={() => setCurrentPage(page)} 
+                <PaginationButton
+                  key={page}
+                  page={page}
+                  isActive={currentPage === page}
+                  onClick={() => setCurrentPage(page)}
                 />
               ))}
 
-              <button 
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} 
-                disabled={currentPage === totalPages} 
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
                 className="p-2 rounded-lg bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

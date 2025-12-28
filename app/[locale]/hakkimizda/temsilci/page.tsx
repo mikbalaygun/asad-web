@@ -1,7 +1,5 @@
 // app/[locale]/hakkimizda/temsilci/page.tsx
-import { getRepresentative } from '@/lib/api/representative';
-import { Representative } from '@/lib/types/representative';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getRepresentative, getMediaUrl } from '@/lib/api/representative';
 import RepresentativeClient from '@/components/RepresentativeClient';
 
 export const metadata = {
@@ -15,8 +13,8 @@ export default async function RepresentativePage({
   params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
   const { locale } = await params;
-  
-  let representativeData: Representative | null = null;
+
+  let representativeData = null;
   try {
     representativeData = await getRepresentative();
   } catch (error) {
@@ -36,7 +34,7 @@ export default async function RepresentativePage({
   const formattedRepresentative = {
     firstName: representativeData.firstName,
     lastName: representativeData.lastName,
-    photo: representativeData.photo ? getStrapiMedia(representativeData.photo.url) : undefined,
+    photo: getMediaUrl(representativeData.photo),
   };
 
   return <RepresentativeClient representative={formattedRepresentative} locale={locale} />;

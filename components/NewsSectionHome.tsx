@@ -42,10 +42,10 @@ function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
         className="group relative h-full"
       >
         <div className="relative backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-ocean-cyan/30 transition-all h-full flex flex-col">
-          
+
           {/* Image */}
           {item.image ? (
-            <div className="relative w-full h-48 overflow-hidden bg-ocean-navy/20">
+            <div className="relative w-full h-56 sm:h-48 overflow-hidden bg-ocean-navy/20">
               <Image
                 src={item.image}
                 alt={item.title}
@@ -60,7 +60,7 @@ function NewsCard({ item, locale }: { item: NewsItem; locale: string }) {
               </div>
             </div>
           ) : (
-            <div className="relative w-full h-48 bg-gradient-to-br from-ocean-cyan/10 to-ocean-navy/10 flex items-center justify-center">
+            <div className="relative w-full h-56 sm:h-48 bg-gradient-to-br from-ocean-cyan/10 to-ocean-navy/10 flex items-center justify-center">
               <svg className="w-16 h-16 text-ocean-cyan/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
@@ -142,7 +142,7 @@ export default function NewsSectionHome({ news, announcements, locale }: Props) 
   return (
     <section className="relative py-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep via-mid to-ocean-deep" />
-      
+
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -154,7 +154,7 @@ export default function NewsSectionHome({ news, announcements, locale }: Props) 
           <span className="inline-block px-4 py-2 rounded-full bg-ocean-cyan/10 border border-ocean-cyan/20 text-ocean-cyan text-sm font-semibold mb-4">
             {locale === 'tr' ? 'Güncel Gelişmeler' : 'Latest Updates'}
           </span>
-          
+
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             {locale === 'tr' ? 'Son Haberler ve' : 'Latest News and'}
             <span className="block mt-2 text-ocean-cyan">{locale === 'tr' ? 'Duyurular' : 'Announcements'}</span>
@@ -166,21 +166,19 @@ export default function NewsSectionHome({ news, announcements, locale }: Props) 
           <div className="inline-flex backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-1">
             <button
               onClick={() => setActiveTab('news')}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all ${
-                activeTab === 'news' 
-                  ? 'bg-ocean-cyan text-white' 
+              className={`px-8 py-4 rounded-xl font-semibold transition-all ${activeTab === 'news'
+                  ? 'bg-ocean-cyan text-white'
                   : 'text-white/60 hover:text-white'
-              }`}
+                }`}
             >
               {locale === 'tr' ? 'Haberler' : 'News'} ({news.length})
             </button>
             <button
               onClick={() => setActiveTab('announcements')}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all ${
-                activeTab === 'announcements' 
-                  ? 'bg-ocean-cyan text-white' 
+              className={`px-8 py-4 rounded-xl font-semibold transition-all ${activeTab === 'announcements'
+                  ? 'bg-ocean-cyan text-white'
                   : 'text-white/60 hover:text-white'
-              }`}
+                }`}
             >
               {locale === 'tr' ? 'Duyurular' : 'Announcements'} ({announcements.length})
             </button>
@@ -189,7 +187,7 @@ export default function NewsSectionHome({ news, announcements, locale }: Props) 
 
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {activeTab === 'news' 
+          {activeTab === 'news'
             ? news.map((item) => <NewsCard key={item.id} item={item} locale={locale} />)
             : announcements.map((item) => <AnnouncementCard key={item.id} item={item} locale={locale} />)
           }

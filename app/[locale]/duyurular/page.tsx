@@ -15,49 +15,52 @@ export default async function AnnouncementsPage({
   const { locale } = await params;
   const noticesData = await getAllNotices(locale);
 
-  // Strapi verisini component'e uygun formata çevir
-  const formattedAnnouncements = noticesData.map((item) => ({
-    id: item.id,
-    slug: item.slug,
-    title: item.title,
-    content: extractTextFromBlocks(item.content),
-    priority: item.priority,
-    startDate: new Date(item.startDate).toLocaleDateString(
-      locale === 'tr' ? 'tr-TR' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }
-    ),
-    endDate: new Date(item.endDate).toLocaleDateString(
-      locale === 'tr' ? 'tr-TR' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }
-    ),
-    isActive: item.isActive,
-  }));
+  // API verisini component'e uygun formata çevir
+  const formattedAnnouncements = noticesData
+    .filter((item) => item.isActive)
+    .map((item) => ({
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      content: item.excerpt || extractTextFromContent(item.content),
+      priority: item.priority,
+      date: formatDate(item.publishedDate, locale),
+      isActive: item.isActive,
+    }));
 
   return <AnnouncementsListClient announcements={formattedAnnouncements} locale={locale} />;
 }
 
+function formatDate(dateStr: string, locale: 'tr' | 'en'): string {
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString(
+      locale === 'tr' ? 'tr-TR' : 'en-US',
+      { year: 'numeric', month: 'long', day: 'numeric' }
+    );
+  } catch {
+    return '';
+  }
+}
+
 // İçerikten düz metin çıkar
-function extractTextFromBlocks(blocks: any): string {
-  if (!blocks) return '';
-  if (typeof blocks === 'string') return blocks.slice(0, 200);
-  if (!Array.isArray(blocks)) return '';
-  if (blocks.length === 0) return '';
-  
-  return blocks
-    .map((block) => {
-      if (block.children) {
-        return block.children.map((child: any) => child.text || '').join(' ');
-      }
-      return '';
-    })
-    .join(' ')
-    .slice(0, 200);
+function extractTextFromContent(content: unknown): string {
+  if (!content) return '';
+  if (typeof content === 'string') {
+    // HTML taglarını temizle
+    return content.replace(/<[^>]*>/g, '').slice(0, 200);
+  }
+  if (Array.isArray(content)) {
+    return content
+      .map((block) => {
+        if (block.children) {
+          return block.children.map((child: { text?: string }) => child.text || '').join(' ');
+        }
+        return '';
+      })
+      .join(' ')
+      .slice(0, 200);
+  }
+  return '';
 }
