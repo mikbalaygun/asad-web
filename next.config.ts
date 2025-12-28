@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "asad.org.tr",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
         hostname: "api.asad.org.tr",
         pathname: "/uploads/**",
       },

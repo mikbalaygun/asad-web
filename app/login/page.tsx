@@ -103,7 +103,7 @@ export default function LoginPage() {
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                         className="w-full pl-11 pr-4 py-3.5 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-ocean-cyan/50 focus:border-transparent transition-all hover:bg-black/30"
-                                        placeholder="admin@asad.org.tr"
+                                        placeholder=""
                                     />
                                 </div>
                             </div>
