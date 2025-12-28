@@ -51,6 +51,7 @@ function NewsCard({ item, locale, priority = false }: { item: NewsItem; locale: 
                 src={item.image}
                 alt={item.title}
                 fill
+                unoptimized
                 priority={priority}
                 /* Sizes: Tarayıcıya doğru boyutu indirterek netlik sağlar */
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -29,6 +29,7 @@ function MemberCard({ member }: { member: BoardMember }) {
               src={member.photo}
               alt={`${member.firstName} ${member.lastName}`}
               fill
+              unoptimized
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (

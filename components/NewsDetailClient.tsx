@@ -200,6 +200,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                       src={news.image}
                       alt={news.title}
                       fill
+                      unoptimized
                       priority
                       quality={75}
                       sizes="(max-width: 1200px) 100vw, 1200px"
@@ -286,6 +287,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                           src={item.image}
                           alt={item.title}
                           fill
+                          unoptimized
                           sizes="(max-width: 768px) 100vw, 33vw"
                           className="object-cover group-hover:scale-110 transition-transform duration-700"
                         />
