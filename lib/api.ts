@@ -9,9 +9,9 @@ function getBaseUrl(): string {
     if (process.env.NEXT_PUBLIC_API_URL) {
         return process.env.NEXT_PUBLIC_API_URL;
     }
-    // For server-side rendering, construct URL from environment or use default
+    // For server-side rendering, always use localhost to avoid DNS/Firewall issues
     if (typeof window === "undefined") {
-        return process.env.NEXTAUTH_URL || "http://localhost:3000";
+        return "http://localhost:3000";
     }
     // Client-side: use relative URL
     return "";
