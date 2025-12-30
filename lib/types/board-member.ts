@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/board-member.ts
 
 export interface BoardMember {

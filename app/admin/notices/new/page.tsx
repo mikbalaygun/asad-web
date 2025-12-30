@@ -21,7 +21,7 @@ export default async function NewNoticePage({ searchParams }: NewNoticePageProps
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white">{isTranslation ? `${locale.toUpperCase()} Çevirisi Ekle` : "Yeni Duyuru"}</h1>
-                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: "{parentItem.title}"</p>}
+                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: &quot;{parentItem.title}&quot;</p>}
             </div>
 
             {isTranslation && parentItem && (

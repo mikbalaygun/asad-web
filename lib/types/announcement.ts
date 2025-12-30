@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/announcement.ts
 
 export type AnnouncementPriority = 'low' | 'medium' | 'high' | 'urgent';

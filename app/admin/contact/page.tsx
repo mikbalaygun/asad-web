@@ -72,7 +72,7 @@ export default function AdminContactPage() {
                         onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
                         placeholder="https://www.google.com/maps/embed?pb=..."
                     />
-                    <p className="text-xs text-slate-400">Google Maps'ten 'Harita yerleştirme' (Embed a map) seçeneği ile aldığınız linki buraya yapıştırın.</p>
+                    <p className="text-xs text-slate-400">Google Maps&apos;ten &apos;Harita yerleştirme&apos; (Embed a map) seçeneği ile aldığınız linki buraya yapıştırın.</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Enlem (Latitude)</Label><Input value={formData.latitude || ""} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} /></div>

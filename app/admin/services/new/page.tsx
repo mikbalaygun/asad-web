@@ -21,7 +21,7 @@ export default async function NewServicePage({ searchParams }: NewServicePagePro
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white">{isTranslation ? `${locale.toUpperCase()} Çevirisi Ekle` : "Yeni Hizmet"}</h1>
-                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: "{parentItem.title}"</p>}
+                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: &quot;{parentItem.title}&quot;</p>}
             </div>
 
             {isTranslation && parentItem && (
@@ -35,7 +35,7 @@ export default async function NewServicePage({ searchParams }: NewServicePagePro
             <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
                 <ServiceForm mode="create" initialData={isTranslation ? {
                     title: "", slug: "", shortDescription: "", description: "",
-                    icon: parentItem?.icon || "⚡", order: parentItem?.order || 0, isActive: true, locale,
+                    order: parentItem?.order || 0, isActive: true, locale, coverImage: null,
                     parentId: parentId,
                 } : undefined} />
             </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/sponsor.ts
 
 export interface StrapiImage {

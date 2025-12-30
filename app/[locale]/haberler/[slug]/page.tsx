@@ -12,7 +12,13 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug, locale } = await params;
 
   try {
-    const news = await getNewsBySlug(slug, locale);
+    let news = await getNewsBySlug(slug, locale);
+
+    if (!news) {
+      const allNews = await getAllNews(locale);
+      news = allNews.find((item) => item.slug === slug) || null;
+    }
+
     if (!news) return { title: 'Haber Bulunamadı | ASAD' };
     return { title: `${news.title} | ASAD`, description: news.excerpt };
   } catch (error) {

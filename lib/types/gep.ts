@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/gep.ts
 export interface GepTeamMember {
   id: number;

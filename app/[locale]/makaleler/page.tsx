@@ -14,7 +14,7 @@ export default async function ArticlesPage({
   params: Promise<{ locale: 'tr' | 'en' }>;
 }) {
   const { locale } = await params;
-  
+
   let articlesData: Article[] = [];
   try {
     articlesData = await getAllArticles(locale);
@@ -45,9 +45,10 @@ export default async function ArticlesPage({
 }
 
 // Okuma süresini hesapla
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function calculateReadTime(content: any): string {
   if (!content) return '3 dk';
-  
+
   let text = '';
   if (typeof content === 'string') {
     text = content;
@@ -55,6 +56,7 @@ function calculateReadTime(content: any): string {
     text = content
       .map((block) => {
         if (block.children) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return block.children.map((child: any) => child.text || '').join(' ');
         }
         return '';
@@ -65,6 +67,6 @@ function calculateReadTime(content: any): string {
   const wordsPerMinute = 200;
   const wordCount = text.split(/\s+/).length;
   const minutes = Math.ceil(wordCount / wordsPerMinute);
-  
+
   return `${minutes} dk`;
 }

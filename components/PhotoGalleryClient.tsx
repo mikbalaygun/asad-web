@@ -88,6 +88,7 @@ function Lightbox({ photo, onClose, onNext, onPrev }: {
       {/* Image Container */}
       <div className="flex flex-col items-center max-w-5xl max-h-[90vh] mx-16" onClick={(e) => e.stopPropagation()}>
         <div className="relative w-full" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={photo.image}
             alt={photo.alternativeText || photo.title}

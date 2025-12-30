@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 
@@ -25,7 +26,7 @@ export default async function AdminVideoGalleryPage() {
                         <div key={v.id} className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden group">
                             <div className="relative aspect-video">
                                 {thumbnail ? (
-                                    <img src={thumbnail} alt={v.title} className="w-full h-full object-cover" />
+                                    <Image src={thumbnail} alt={v.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
                                     <div className="w-full h-full bg-slate-700 flex items-center justify-center text-4xl">🎥</div>
                                 )}

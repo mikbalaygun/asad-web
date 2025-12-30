@@ -29,12 +29,39 @@ export default function PopupModal({
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  const saveCloseTime = () => {
+    const storageKey = `popup_${id}_${displayFrequency}`;
+    // Remove unused 'now' variable
+
+    switch (displayFrequency) {
+      case 'once':
+        localStorage.setItem(storageKey, 'true');
+        break;
+
+      case 'daily':
+        localStorage.setItem(storageKey, Date.now().toString());
+        break;
+
+      case 'session':
+        sessionStorage.setItem(storageKey, 'true');
+        break;
+
+      case 'always':
+        break;
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    saveCloseTime();
+  };
+
   useEffect(() => {
     // Mobil kontrolü
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
@@ -42,9 +69,37 @@ export default function PopupModal({
   }, []);
 
   useEffect(() => {
+    const checkShouldShow = (): boolean => {
+      const storageKey = `popup_${id}_${displayFrequency}`;
+
+      switch (displayFrequency) {
+        case 'once':
+          const shownOnce = localStorage.getItem(storageKey);
+          return !shownOnce;
+
+        case 'daily':
+          const lastShownDaily = localStorage.getItem(storageKey);
+          if (!lastShownDaily) return true;
+
+          const lastDate = new Date(parseInt(lastShownDaily));
+          const today = new Date();
+          return lastDate.getDate() !== today.getDate();
+
+        case 'session':
+          const shownSession = sessionStorage.getItem(storageKey);
+          return !shownSession;
+
+        case 'always':
+          return true;
+
+        default:
+          return false;
+      }
+    };
+
     // Pop-up gösterilmeli mi kontrol et
     const shouldShow = checkShouldShow();
-    
+
     if (shouldShow) {
       // Kısa bir gecikme ile aç (sayfa yüklendikten sonra)
       const timer = setTimeout(() => {
@@ -64,63 +119,8 @@ export default function PopupModal({
 
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, closeDelay]);
-
-  const checkShouldShow = (): boolean => {
-    const storageKey = `popup_${id}_${displayFrequency}`;
-    const now = Date.now();
-
-    switch (displayFrequency) {
-      case 'once':
-        const shownOnce = localStorage.getItem(storageKey);
-        return !shownOnce;
-
-      case 'daily':
-        const lastShownDaily = localStorage.getItem(storageKey);
-        if (!lastShownDaily) return true;
-        
-        const lastDate = new Date(parseInt(lastShownDaily));
-        const today = new Date();
-        return lastDate.getDate() !== today.getDate();
-
-      case 'session':
-        const shownSession = sessionStorage.getItem(storageKey);
-        return !shownSession;
-
-      case 'always':
-        return true;
-
-      default:
-        return false;
-    }
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    saveCloseTime();
-  };
-
-  const saveCloseTime = () => {
-    const storageKey = `popup_${id}_${displayFrequency}`;
-    const now = Date.now();
-
-    switch (displayFrequency) {
-      case 'once':
-        localStorage.setItem(storageKey, 'true');
-        break;
-
-      case 'daily':
-        localStorage.setItem(storageKey, now.toString());
-        break;
-
-      case 'session':
-        sessionStorage.setItem(storageKey, 'true');
-        break;
-
-      case 'always':
-        break;
-    }
-  };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {

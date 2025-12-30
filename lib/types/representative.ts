@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/representative.ts
 
 // Temsilci (Single Type - Tek kişi, basit)

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/gallery.ts
 
 export type PhotoCategory = 'Dalışlar' | 'Keşifler' | 'Etkinlikler' | 'Eğitimler' | 'Çevre';

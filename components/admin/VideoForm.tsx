@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Image from "next/image";
 
 interface VideoFormData {
     id?: number;
@@ -57,8 +58,8 @@ export function VideoForm({ initialData, mode }: { initialData?: VideoFormData; 
                         <Label>YouTube Linki *</Label>
                         <Input value={formData.youtubeLink} onChange={(e) => setFormData({ ...formData, youtubeLink: e.target.value })} placeholder="https://youtube.com/watch?v=..." required />
                         {thumbnail && (
-                            <div className="mt-2">
-                                <img src={thumbnail} alt="Thumbnail" className="rounded-lg w-full max-w-xs" />
+                            <div className="mt-2 relative w-full h-48">
+                                <Image src={thumbnail} alt="Thumbnail" fill className="object-cover rounded-lg" sizes="320px" />
                             </div>
                         )}
                     </div>

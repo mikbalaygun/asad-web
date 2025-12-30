@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/utils.ts
 
 /**
@@ -5,7 +6,7 @@
  */
 export function formatDate(dateString: string, locale: 'tr' | 'en' = 'tr'): string {
   const date = new Date(dateString);
-  
+
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
@@ -15,7 +16,7 @@ export function formatDate(dateString: string, locale: 'tr' | 'en' = 'tr'): stri
   if (locale === 'tr') {
     return date.toLocaleDateString('tr-TR', options);
   }
-  
+
   return date.toLocaleDateString('en-US', options);
 }
 
@@ -29,7 +30,7 @@ export function calculateReadTime(content: any[], locale: 'tr' | 'en' = 'tr'): s
 
   // Tüm text içeriğini çıkar
   let totalText = '';
-  
+
   const extractText = (blocks: any[]): void => {
     blocks.forEach((block) => {
       if (block.type === 'paragraph' && block.children) {
@@ -56,17 +57,17 @@ export function calculateReadTime(content: any[], locale: 'tr' | 'en' = 'tr'): s
 
   // Kelime sayısını hesapla
   const words = totalText.trim().split(/\s+/).length;
-  
+
   // Ortalama okuma hızı: 200 kelime/dakika
   const minutes = Math.ceil(words / 200);
-  
+
   // Minimum 1 dakika
   const readTime = Math.max(1, minutes);
 
   if (locale === 'tr') {
     return `${readTime} dk okuma`;
   }
-  
+
   return `${readTime} min read`;
 }
 

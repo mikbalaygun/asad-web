@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/types/audit-board.ts
 
 export interface AuditBoardMember {

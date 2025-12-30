@@ -21,7 +21,7 @@ export default async function NewPopupPage({ searchParams }: NewPopupPageProps) 
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white">{isTranslation ? `${locale.toUpperCase()} Çevirisi Ekle` : "Yeni Popup"}</h1>
-                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: "{parentItem.title}"</p>}
+                {isTranslation && parentItem && <p className="text-slate-400 mt-1">Orijinal: &quot;{parentItem.title}&quot;</p>}
             </div>
 
             {isTranslation && parentItem && (
@@ -38,6 +38,7 @@ export default async function NewPopupPage({ searchParams }: NewPopupPageProps) 
                     startDate: parentItem?.startDate ? new Date(parentItem.startDate).toISOString().slice(0, 16) : "",
                     endDate: parentItem?.endDate ? new Date(parentItem.endDate).toISOString().slice(0, 16) : "",
                     displayFrequency: parentItem?.displayFrequency || "always", isActive: true, locale,
+                    closeDelay: parentItem?.closeDelay || 0,
                 } : undefined} />
             </div>
         </div>

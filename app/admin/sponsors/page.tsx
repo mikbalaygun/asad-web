@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 
@@ -17,7 +18,9 @@ export default async function AdminSponsorsPage() {
                 ) : sponsors.map((s) => (
                     <div key={s.id} className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
                         {s.logo ? (
-                            <img src={s.logo} alt={s.name} className="h-16 mx-auto mb-3 object-contain" />
+                            <div className="relative h-16 w-full mb-3">
+                                <Image src={s.logo} alt={s.name} fill className="object-contain" sizes="200px" />
+                            </div>
                         ) : (
                             <div className="h-16 flex items-center justify-center text-2xl mb-3">🏢</div>
                         )}
