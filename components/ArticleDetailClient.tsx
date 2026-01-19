@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface ArticleData {
   id: number;
@@ -198,7 +199,7 @@ export default function ArticleDetailClient({ article, relatedArticles, locale }
                 <article className="prose prose-invert prose-lg max-w-none">
                   <div
                     className="article-content"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
                   />
                 </article>
 

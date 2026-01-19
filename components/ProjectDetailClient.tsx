@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface ProjectData {
   id: number;
@@ -140,13 +141,13 @@ export default function ProjectDetailClient({ project, relatedProjects, locale }
       {/* Content Section */}
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid lg:grid-cols-[1fr,300px] gap-12">
               {/* Main Content */}
               <article className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
-                <div 
+                <div
                   className="prose prose-invert prose-lg max-w-none
                     prose-headings:text-white prose-headings:font-bold
                     prose-p:text-white/80 prose-p:leading-relaxed
@@ -156,7 +157,7 @@ export default function ProjectDetailClient({ project, relatedProjects, locale }
                     prose-ul:text-white/80 prose-ol:text-white/80
                     prose-li:marker:text-ocean-cyan
                     prose-code:text-ocean-cyan prose-code:bg-white/5 prose-code:px-1 prose-code:rounded"
-                  dangerouslySetInnerHTML={{ __html: project.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.content) }}
                 />
               </article>
 

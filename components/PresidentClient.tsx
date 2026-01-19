@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface PresidentData {
   firstName: string;
@@ -60,7 +61,7 @@ export default function PresidentClient({ president, locale }: Props) {
               {locale === 'tr' ? 'Başkanımız' : 'Our President'}
             </h1>
             <p className="text-lg text-white/70">
-              {locale === 'tr' 
+              {locale === 'tr'
                 ? 'Sualtı sporları tutkusu ve liderlik vizyonuyla derneğimizi yönlendiren başkanımız'
                 : 'Our president leading our association with passion for underwater sports and leadership vision'
               }
@@ -71,7 +72,7 @@ export default function PresidentClient({ president, locale }: Props) {
 
       <section className="relative py-12">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean-deep to-mid" />
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -119,7 +120,7 @@ export default function PresidentClient({ president, locale }: Props) {
                       </a>
                     </div>
 
-                   
+
                   </div>
                 </div>
               </div>
@@ -136,9 +137,9 @@ export default function PresidentClient({ president, locale }: Props) {
                       <h3 className="text-2xl font-bold text-white mb-4">
                         {locale === 'tr' ? 'Başkanın Mesajı' : 'President\'s Message'}
                       </h3>
-                      <div 
+                      <div
                         className="space-y-4 text-white/70 leading-relaxed president-message"
-                        dangerouslySetInnerHTML={{ __html: president.message }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(president.message) }}
                       />
                     </div>
                   </div>
@@ -149,7 +150,7 @@ export default function PresidentClient({ president, locale }: Props) {
                     {locale === 'tr' ? 'İletişime Geçin' : 'Get in Touch'}
                   </h3>
                   <p className="text-white/60 mb-6 text-sm">
-                    {locale === 'tr' 
+                    {locale === 'tr'
                       ? 'Sorularınız, önerileriniz veya işbirliği teklifleriniz için'
                       : 'For your questions, suggestions or collaboration proposals'
                     }

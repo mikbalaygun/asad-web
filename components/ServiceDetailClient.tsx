@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface ServiceData {
   id: number;
@@ -153,7 +154,7 @@ export default function ServiceDetailClient({ service, relatedServices, locale }
                 <article className="prose prose-invert prose-lg max-w-none mb-12">
                   <div
                     className="service-content text-white/80 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: service.description }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(service.description) }}
                   />
                 </article>
 

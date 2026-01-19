@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface NewsData {
   id: number;
@@ -213,7 +214,7 @@ export default function NewsDetailClient({ news, relatedNews, locale }: Props) {
                 <article className="prose prose-invert prose-lg max-w-none">
                   <div
                     className="news-content-body"
-                    dangerouslySetInnerHTML={{ __html: news.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(news.content) }}
                   />
                 </article>
 

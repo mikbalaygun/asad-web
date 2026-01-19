@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface AnnouncementData {
   id: number;
@@ -168,7 +169,7 @@ export default function AnnouncementDetailClient({ announcement, relatedAnnounce
                 <article className={`prose prose-invert prose-lg max-w-none p-8 rounded-2xl backdrop-blur-lg ${config.bg} border ${config.border}`}>
                   <div
                     className="announcement-content"
-                    dangerouslySetInnerHTML={{ __html: announcement.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(announcement.content) }}
                   />
                 </article>
 
