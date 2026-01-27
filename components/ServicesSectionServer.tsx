@@ -1,6 +1,5 @@
 // components/ServicesSectionServer.tsx
 import { getFeaturedServices } from '@/lib/api/services';
-import { getStrapiMedia } from '@/lib/strapi';
 import ServicesSection from '@/components/ServicesSection';
 
 interface Props {
@@ -24,7 +23,7 @@ export default async function ServicesSectionServer({ locale }: Props) {
       title: item.title,
       shortDescription: item.shortDescription,
       icon: item.icon || 'diving',
-      image: item.coverImage ? getStrapiMedia(item.coverImage.url) : undefined,
+      image: item.coverImage || undefined,
     }));
 
     return <ServicesSection services={formattedServices} locale={locale} />;
